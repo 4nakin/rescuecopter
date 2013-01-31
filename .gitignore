@@ -1,0 +1,8 @@
+*.class
+
+/rescuecopter-android/bin
+/rescuecopter-android/gen
+/rescuecopter-html5/.gwt
+/rescuecopter-html5/gwt-unitCache
+/rescuecopter-html5/war
+/rescuecopter/bin
