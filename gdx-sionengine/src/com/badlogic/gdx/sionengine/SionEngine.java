@@ -28,7 +28,7 @@ public class SionEngine extends Game {
 	private static float m_unitsPerPixel;
 	private static float m_pixelsPerUnit;
 	
-	private ObjectMap<String, Screen> m_screens;
+	protected ObjectMap<String, Screen> m_screens;
 	private Screen m_nextScreen = null;
 	private Logger m_logger;
 	private Rectangle m_viewport = new Rectangle(0, 0, 0, 0);
@@ -125,6 +125,16 @@ public class SionEngine extends Game {
 		}
 	}
 	
+	public Screen getScreen(String name) {
+		Screen screen = m_screens.get(name);
+		
+		if (screen == null) {
+			m_logger.error("screen " + name + "does not exist");
+		}
+		
+		return screen;
+	}
+	
 	public static int getVirtualWidth() {
 		return m_virtualWidth;
 	}
@@ -177,6 +187,7 @@ public class SionEngine extends Game {
 		if (m_nextScreen != null) {
 			setScreen(m_nextScreen);
 			m_nextScreen = null;
+			m_logger.info("changing to screen " + m_screens.findKey(getScreen(), true));
 		}
 	}
 }
