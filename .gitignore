@@ -1,7 +1,9 @@
 *.class
 
+/gdx-sionengine/bin
 /rescuecopter-android/bin
 /rescuecopter-android/gen
+/rescuecopter-desktop/bin
 /rescuecopter-html/.gwt
 /rescuecopter-html/gwt-unitCache
 /rescuecopter-html/war
