@@ -1,6 +1,6 @@
-package com.siondrean.rescue.client;
+package com.siondream.rescue.client;
 
-import com.siondrean.rescue.RescueCopter;
+import com.siondream.rescue.RescueCopter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;

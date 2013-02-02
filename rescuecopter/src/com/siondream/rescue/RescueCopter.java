@@ -1,4 +1,4 @@
-package com.siondrean.rescue;
+package com.siondream.rescue;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;

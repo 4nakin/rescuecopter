@@ -3,7 +3,8 @@
 <module>
 	<inherits name='com.badlogic.gdx.backends.gdx_backends_gwt' />
 	<inherits name='aurelienribon.tweenengine' />
+	<inherits name='SionEngine' />
 	<inherits name='RescueCopter' />
-	<entry-point class='com.siondrean.rescue.client.GwtLauncher' />
+	<entry-point class='com.siondream.rescue.client.GwtLauncher' />
 	<set-configuration-property name="gdx.assetpath" value="../rescuecopter-android/assets" />
 </module>

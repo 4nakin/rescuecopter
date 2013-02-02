@@ -6,7 +6,7 @@
 	<classpathentry kind="output" path="bin/classes"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" exported="true" path="/rescuecopter/libs/gdx.jar" sourcepath="/rescuecopter/libs/gdx-sources.jar"/>
+	<classpathentry kind="lib" exported="true" path="/gdx-sionengine/libs/gdx.jar" sourcepath="/gdx-sionengine/libs/gdx-sources.jar"/>
 	<classpathentry kind="lib" exported="true" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
-	<classpathentry kind="lib" exported="true" path="/rescuecopter/libs/tween-engine-api.jar" sourcepath="/rescuecopter/libs/tween-engine-api-sources.jar"/>
+	<classpathentry kind="lib" exported="true" path="/gdx-sionengine/libs/tween-engine-api.jar" sourcepath="/gdx-sionengine/libs/tween-engine-api-sources.jar"/>
 </classpath>
