@@ -58,7 +58,7 @@ public class LanguageManager {
 		m_languageName = language;
 		m_logger.setLevel(loggingLevel);
 		
-		if (!loadLanguage(m_languageName)) {
+		if (!loadLanguage(m_languageName) && !m_languageName.equals(DEFAULT_LANGUAGE)) {
 			loadLanguage(DEFAULT_LANGUAGE);
 		}
 	}
