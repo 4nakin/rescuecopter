@@ -6,11 +6,16 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.sionengine.animation.AnimationData;
+import com.badlogic.gdx.sionengine.animation.AnimationLoader;
+import com.badlogic.gdx.sionengine.physics.PhysicsData;
+import com.badlogic.gdx.sionengine.physics.PhysicsLoader;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.ObjectMap;
 
@@ -44,6 +49,8 @@ public class SionEngine extends Game {
 		m_IDGenerator = new IDGenerator();
 		
 		m_assetManager = new AssetManager();
+		m_assetManager.setLoader(AnimationData.class, new AnimationLoader(new InternalFileHandleResolver()));
+		m_assetManager.setLoader(PhysicsData.class, new PhysicsLoader(new InternalFileHandleResolver()));
 		
 		m_tweenManager = new TweenManager();
 		
@@ -60,8 +67,7 @@ public class SionEngine extends Game {
 		
 		if (m_settings.getBoolean("enableBox2D", true)) {
 			final Vector3 gravity = m_settings.getVector("gravity", Vector3.Zero);
-			m_world = new World(new Vector2(gravity.x, gravity.y),
-								m_settings.getBoolean("doSleep", true));
+			m_world = new World(new Vector2(gravity.x, gravity.y), m_settings.getBoolean("doSleep", true));
 		}
 		
 		Gdx.graphics.setTitle(m_settings.getString("windowTitle", "SionEngine"));
@@ -122,6 +128,17 @@ public class SionEngine extends Game {
 		else
 		{
 			m_logger.error("screen " + name + "does not exist");
+		}
+	}
+	
+	@Override
+	public void setScreen(Screen screen) {
+		if (screen != null) {
+			m_nextScreen = screen;
+		}
+		else
+		{
+			m_logger.error("trying to set an invalid screen");
 		}
 	}
 	
