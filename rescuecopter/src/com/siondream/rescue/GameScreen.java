@@ -3,6 +3,8 @@ package com.siondream.rescue;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.sionengine.SionEngine;
+import com.badlogic.gdx.sionengine.animation.AnimationData;
+import com.badlogic.gdx.sionengine.physics.PhysicsData;
 
 public class GameScreen implements Screen, InputProcessor {
 	
@@ -10,6 +12,8 @@ public class GameScreen implements Screen, InputProcessor {
 	
 	public GameScreen(SionEngine engine) {
 		m_engine = engine;
+		m_engine.getAssetManager().load("data/caveman.xml", AnimationData.class);
+		m_engine.getAssetManager().load("data/caveman_physics.xml", PhysicsData.class);
 	}
 	
 	@Override
@@ -32,8 +36,7 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public void render(float delta) {
-		// TODO Auto-generated method stub
-		
+		m_engine.getAssetManager().update();
 	}
 
 	@Override
