@@ -74,4 +74,8 @@ public class AnimationData {
 		
 		return animation;
 	}
+	
+	public Texture getTexture() {
+		return m_texture;
+	}
 }

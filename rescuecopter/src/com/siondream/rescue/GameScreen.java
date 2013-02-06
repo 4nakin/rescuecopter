@@ -1,19 +1,38 @@
 package com.siondream.rescue;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.SionEngine;
-import com.badlogic.gdx.sionengine.animation.AnimationData;
-import com.badlogic.gdx.sionengine.physics.PhysicsData;
+import com.badlogic.gdx.sionengine.entity.Entity;
+import com.badlogic.gdx.sionengine.entity.EntityWorld;
+import com.badlogic.gdx.sionengine.entity.components.AnimatedSprite;
+import com.badlogic.gdx.sionengine.entity.components.Asset;
+import com.badlogic.gdx.sionengine.entity.components.State;
+import com.badlogic.gdx.sionengine.entity.components.Transform;
+import com.badlogic.gdx.utils.Logger;
 
 public class GameScreen implements Screen, InputProcessor {
 	
-	private SionEngine m_engine;
+	private Logger m_logger = new Logger("GameScreen", Logger.INFO);
 	
 	public GameScreen(SionEngine engine) {
-		m_engine = engine;
-		m_engine.getAssetManager().load("data/caveman.xml", AnimationData.class);
-		m_engine.getAssetManager().load("data/caveman_physics.xml", PhysicsData.class);
+		EntityWorld world = SionEngine.getEntityWorld();
+		Entity entity = world.createEntity();
+		Transform transform = (Transform)world.createComponent(Transform.getComponentType());
+		AnimatedSprite anim = (AnimatedSprite)world.createComponent(AnimatedSprite.getComponentType());
+		State state = (State)world.createComponent(State.getComponentType());
+		Asset asset = (Asset)world.createComponent(Asset.getComponentType());
+		anim.setFileName("data/caveman.xml");
+		state.set(Globals.state_idle);
+		entity.addComponent(transform);
+		entity.addComponent(anim);
+		entity.addComponent(state);
+		entity.addComponent(asset);
+		world.addEntity(entity);
 	}
 	
 	@Override
@@ -36,7 +55,23 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public void render(float delta) {
-		m_engine.getAssetManager().update();
+		//SionEngine.getAssetManager().update();
+		SionEngine.getEntityWorld().update();
+		Vector3 cameraPos = SionEngine.getCamera().position;
+		
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+			cameraPos.x -= 5.0f;
+		}
+		else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+			cameraPos.x += 5.0f;
+		}
+		
+		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+			cameraPos.y += 5.0f;
+		}
+		else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+			cameraPos.y -= 5.0f;
+		}
 	}
 
 	@Override

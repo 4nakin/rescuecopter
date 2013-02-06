@@ -1,5 +1,6 @@
 package com.badlogic.gdx.sionengine;
 
+import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenManager;
 
 import com.badlogic.gdx.Game;
@@ -8,14 +9,20 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.sionengine.animation.AnimationData;
 import com.badlogic.gdx.sionengine.animation.AnimationLoader;
+import com.badlogic.gdx.sionengine.entity.EntityWorld;
+import com.badlogic.gdx.sionengine.entity.components.Transform;
 import com.badlogic.gdx.sionengine.physics.PhysicsData;
 import com.badlogic.gdx.sionengine.physics.PhysicsLoader;
+import com.badlogic.gdx.sionengine.tweeners.CameraTweener;
+import com.badlogic.gdx.sionengine.tweeners.TransformTweener;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.ObjectMap;
 
@@ -28,6 +35,9 @@ public class SionEngine extends Game {
 	private static TweenManager m_tweenManager;
 	private static LanguageManager m_languageManager;
 	private static World m_world;
+	private static EntityWorld m_entityWorld;
+	private static SpriteBatch m_batch;
+	private static OrthographicCamera m_camera;
 	private static int m_virtualWidth;
 	private static int m_virtualHeight;
 	private static float m_unitsPerPixel;
@@ -53,6 +63,8 @@ public class SionEngine extends Game {
 		m_assetManager.setLoader(PhysicsData.class, new PhysicsLoader(new InternalFileHandleResolver()));
 		
 		m_tweenManager = new TweenManager();
+		Tween.registerAccessor(Transform.class, new TransformTweener());
+		Tween.registerAccessor(OrthographicCamera.class, new CameraTweener());
 		
 		m_languageManager = new LanguageManager();
 		
@@ -70,6 +82,13 @@ public class SionEngine extends Game {
 			m_world = new World(new Vector2(gravity.x, gravity.y), m_settings.getBoolean("doSleep", true));
 		}
 		
+		m_entityWorld = new EntityWorld(m_settings.getInt("entityPoolSize", 100),
+										m_settings.getInt("maxCoponents", 10),
+										m_settings.getInt("entityWorldLoggingLevel", Logger.INFO));
+		
+		m_batch = new SpriteBatch();
+		m_camera = new OrthographicCamera(m_virtualWidth, m_virtualHeight);
+		
 		Gdx.graphics.setTitle(m_settings.getString("windowTitle", "SionEngine"));
 		Gdx.graphics.setDisplayMode(m_virtualWidth, m_virtualHeight, m_settings.getBoolean("fullScreen", false));
 	}
@@ -80,6 +99,9 @@ public class SionEngine extends Game {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glEnable(GL10.GL_BLEND);
+		
+		m_camera.update();
+		m_batch.setProjectionMatrix(m_camera.combined);
 		
 		Gdx.gl.glViewport((int) m_viewport.x,
 						  (int) m_viewport.y,
@@ -200,9 +222,21 @@ public class SionEngine extends Game {
 		return m_world;
 	}
 	
+	public static EntityWorld getEntityWorld() {
+		return m_entityWorld;
+	}
+	
+	public static SpriteBatch getBatch() {
+		return m_batch;
+	}
+	
+	public static OrthographicCamera getCamera() {
+		return m_camera;
+	}
+	
 	private void applyScreenChange() {
 		if (m_nextScreen != null) {
-			setScreen(m_nextScreen);
+			super.setScreen(m_nextScreen);
 			m_nextScreen = null;
 			m_logger.info("changing to screen " + m_screens.findKey(getScreen(), true));
 		}

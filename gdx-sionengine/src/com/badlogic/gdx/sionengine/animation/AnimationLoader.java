@@ -78,7 +78,7 @@ public class AnimationLoader extends AsynchronousAssetLoader<AnimationData, Anim
 		m_animationData = new AnimationData(m_logger.getLevel());
 		
 		// Retrieve texture
-		Texture texture = manager.get(stripExtension(fileName) + ".png", Texture.class);
+		m_animationData.m_texture = manager.get(stripExtension(fileName) + ".png", Texture.class);
 		
 		try {
 			XmlReader reader = new XmlReader();
@@ -97,7 +97,7 @@ public class AnimationLoader extends AsynchronousAssetLoader<AnimationData, Anim
 				Integer id = SionEngine.getIDGenerator().getID(name);
 				
 				Animation animation = new Animation(m_animationData.m_frameDuration,
-													getAnimationFrames(texture, frames),
+													getAnimationFrames(m_animationData.m_texture, frames),
 													getPlayMode(animationNode.get("mode", "normal")));
 				m_animationData.m_animations.put(id, animation);
 				
