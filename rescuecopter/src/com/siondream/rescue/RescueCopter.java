@@ -43,11 +43,11 @@ public class RescueCopter extends SionEngine {
 											SionEngine.getBatch(),
 											SionEngine.getCamera()));
 		
-//		world.addSystem(new PhysicsSystem(world,
-//										  3,
-//										  settings.getInt("physicsSystemLoggingLevel", Logger.INFO),
-//										  SionEngine.getWorld(),
-//										  SionEngine.getCamera()));
+		world.addSystem(new PhysicsSystem(world,
+										  3,
+										  settings.getInt("physicsSystemLoggingLevel", Logger.INFO),
+										  SionEngine.getWorld(),
+										  SionEngine.getCamera()));
 		
 		world.prepare();
 		

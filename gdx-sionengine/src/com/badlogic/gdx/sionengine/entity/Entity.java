@@ -39,8 +39,10 @@ public class Entity implements Poolable {
 	@Override
 	public void reset() {
 		for (int i = 0; i < m_components.length; ++i) {
-			m_world.freeComponent(m_components[i]);
-			m_components[i] = null;
+			if (m_components[i] != null) {
+				m_world.freeComponent(m_components[i]);
+				m_components[i] = null;
+			}
 		}
 		
 		m_validComponents.clear();

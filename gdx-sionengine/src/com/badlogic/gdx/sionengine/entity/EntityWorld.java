@@ -51,7 +51,7 @@ public class EntityWorld {
 	
 	public Entity createEntity() {
 		Entity e = m_entityPool.obtain();
-		
+		m_entities.put(e.m_id, e);
 		m_logger.info("created " + e);
 		
 		return e;
@@ -65,6 +65,7 @@ public class EntityWorld {
 		}
 		
 		m_entityPool.free(e);
+		m_entities.remove(e.m_id);
 	}
 	
 	public void addEntity(Entity e) {

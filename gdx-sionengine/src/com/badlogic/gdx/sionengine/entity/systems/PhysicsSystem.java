@@ -52,11 +52,11 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 		m_handlers = new ObjectMap<Integer, ObjectMap<Integer, CollisionHandler>>();
 		
 		Settings settings = SionEngine.getSettings();
-		m_box2DRenderer = new Box2DDebugRenderer(settings.getBoolean("drawBodies", false),
-											     settings.getBoolean("drawJoints", false),
-												 settings.getBoolean("drawAABBs", false),
-												 settings.getBoolean("drawInactiveBodies", false),
-												 settings.getBoolean("drawVelocities", false));
+		m_box2DRenderer = new Box2DDebugRenderer(settings.getBoolean("drawBodies", true),
+											     settings.getBoolean("drawJoints", true),
+												 settings.getBoolean("drawAABBs", true),
+												 settings.getBoolean("drawInactiveBodies", true),
+												 settings.getBoolean("drawVelocities", true));
 		
 		m_velocityIterations = settings.getInt("velocityIterations", 6);
 		m_positionIterations = settings.getInt("positionIterations", 2);

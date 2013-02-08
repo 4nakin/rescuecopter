@@ -39,7 +39,7 @@ public class Transform extends Component {
 	public void reset() {
 		m_position.x = m_position.y = m_position.z = 0.0f;
 		m_rotation = 0.0f;
-		m_scale = 0.0f;
+		m_scale = 1.0f;
 	}
 
 	@Override

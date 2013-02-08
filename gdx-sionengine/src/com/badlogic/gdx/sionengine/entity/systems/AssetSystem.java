@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.Array;
 
 public class AssetSystem extends EntitySystem {
 
-	private boolean m_wasFullyLoaded = false;
 	private boolean m_isFullyLoaded = false;
 	
 	public AssetSystem(EntityWorld world, int priority, int loggingLevel) {
@@ -26,20 +25,15 @@ public class AssetSystem extends EntitySystem {
 	}
 	
 	@Override
-	public void end() {		
-		m_wasFullyLoaded = m_isFullyLoaded;
-	}
-	
-	@Override
 	protected void process(Entity e) {
-		if (m_isFullyLoaded && !m_wasFullyLoaded) {
-			m_logger.info("fetching components assets for " + e);
+		if (m_isFullyLoaded) {
 			Array<Component> components = e.getComponents();
 			
 			for(Component c : components) {
 				if (c instanceof AsynchronousAsset) {
 					AsynchronousAsset asset = (AsynchronousAsset)c;
 					if (!asset.isLoaded()) {
+						m_logger.info("fetching components assets for " + e);
 						asset.fetchAssets();
 					}
 				}

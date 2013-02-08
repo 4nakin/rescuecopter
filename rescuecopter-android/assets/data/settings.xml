@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+	<!-- Screen size  -->
+	<int key="virtualWidth" value="1280" />
+	<int key="virtualHeight" value="720" />
+	<float key="pixelsPerUnit" value="30.0" />
+	<bool key="fullScreen" value="false" />
+	
+	<!--  AssetSystem -->
+	<int key="assetSystemLoggingLevel" value="1" />
+	
+	<!--  Physics -->
+	<bool key="enableBox2D" value="true" />
+	<int key="physicsSystemLoggingLevel" value="1" />
+	<vector key="gravity" x="0.0" y="-9.8" z="0.0" />
+	<bool key="doSleep" value="true" />
+	<int key="velocityIterations" value="12" />
+	<int key="positionIterations" value="6" />
+	<bool key="drawBodies" value="true" />
+	<bool key="drawJoints" value="true" />
+	<bool key="drawAABBs" value="true" />
+	<bool key="drawInactiveBodies" value="true" />
+	<bool key="drawVelocities" value="true" />
+	
+	<!--  Rendering -->
+	<int key="renderingQueueSize" value="500" />
+	<int key="renderingSystemLoggingLevel" value="1" />
+</settings>

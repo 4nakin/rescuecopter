@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.sionengine.entity.components.Transform;
 import com.badlogic.gdx.sionengine.physics.PhysicsData;
 import com.badlogic.gdx.sionengine.physics.PhysicsLoader;
 import com.badlogic.gdx.sionengine.tweeners.CameraTweener;
+import com.badlogic.gdx.sionengine.tweeners.ColorTweener;
 import com.badlogic.gdx.sionengine.tweeners.TransformTweener;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -65,6 +67,7 @@ public class SionEngine extends Game {
 		m_tweenManager = new TweenManager();
 		Tween.registerAccessor(Transform.class, new TransformTweener());
 		Tween.registerAccessor(OrthographicCamera.class, new CameraTweener());
+		Tween.registerAccessor(Color.class, new ColorTweener());
 		
 		m_languageManager = new LanguageManager();
 		
@@ -88,6 +91,7 @@ public class SionEngine extends Game {
 		
 		m_batch = new SpriteBatch();
 		m_camera = new OrthographicCamera(m_virtualWidth, m_virtualHeight);
+		m_camera.zoom = m_unitsPerPixel;
 		
 		Gdx.graphics.setTitle(m_settings.getString("windowTitle", "SionEngine"));
 		Gdx.graphics.setDisplayMode(m_virtualWidth, m_virtualHeight, m_settings.getBoolean("fullScreen", false));
