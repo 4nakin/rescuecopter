@@ -32,9 +32,9 @@ public class RenderingSystem extends EntitySystem {
 		
 		super(world, priority, loggingLevel);
 		m_logger.info("initializing");
-		m_aspect.addToAll(Transform.getComponentType());
-		m_aspect.addToAll(AnimatedSprite.getComponentType());
-		m_aspect.addToAll(State.getComponentType());
+		m_aspect.addToAll(Transform.class);
+		m_aspect.addToAll(AnimatedSprite.class);
+		m_aspect.addToAll(State.class);
 		m_batch = batch;
 		m_camera = camera;
 		m_sorted = new Array<Entity>(SionEngine.getSettings().getInt("renderingQueueSize", 500));
@@ -50,7 +50,7 @@ public class RenderingSystem extends EntitySystem {
 		m_sorted.sort(m_sorter);
 		
 		for (int i = 0; i < m_sorted.size; ++i) {
-			AnimatedSprite anim = (AnimatedSprite)m_sorted.get(i).getComponent(AnimatedSprite.getComponentType());
+			AnimatedSprite anim = (AnimatedSprite)m_sorted.get(i).getComponent(AnimatedSprite.class);
 			Texture texture = anim.getTexture();
 			
 			if (texture != null) {
@@ -65,9 +65,9 @@ public class RenderingSystem extends EntitySystem {
 	
 	@Override
 	protected void process(Entity e) {
-		AnimatedSprite anim = (AnimatedSprite)e.getComponent(AnimatedSprite.getComponentType());
-		State state = (State)e.getComponent(State.getComponentType());
-		Transform transform = (Transform)e.getComponent(Transform.getComponentType());
+		AnimatedSprite anim = (AnimatedSprite)e.getComponent(AnimatedSprite.class);
+		State state = (State)e.getComponent(State.class);
+		Transform transform = (Transform)e.getComponent(Transform.class);
 		
 		if (anim.isLoaded()) {
 			anim.updateState(state.get());
@@ -104,8 +104,8 @@ public class RenderingSystem extends EntitySystem {
 
 		@Override
 		public int compare(Entity e1, Entity e2) {
-			Transform t1 = (Transform)e1.getComponent(Transform.getComponentType());
-			Transform t2 = (Transform)e2.getComponent(Transform.getComponentType());
+			Transform t1 = (Transform)e1.getComponent(Transform.class);
+			Transform t2 = (Transform)e2.getComponent(Transform.class);
 			
 			Vector3 p1 = t1.getPosition();
 			Vector3 p2 = t2.getPosition();

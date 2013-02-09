@@ -12,8 +12,6 @@ import com.badlogic.gdx.utils.Array;
 
 public class Physics extends Component implements AsynchronousAsset {
 
-	static private int s_type = generateType();
-	
 	private String m_file = null;
 	private Body m_body = null;
 	private Object m_userData = null;
@@ -80,15 +78,6 @@ public class Physics extends Component implements AsynchronousAsset {
 			SionEngine.getAssetManager().unload(m_file);
 			m_file = null;
 		}
-	}
-
-	@Override
-	public int getType() {
-		return s_type;
-	}
-	
-	public static int getComponentType() {
-		return s_type;
 	}
 	
 	@Override

@@ -5,6 +5,7 @@ import java.util.Comparator;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Pool;
 
 @SuppressWarnings("rawtypes")
@@ -13,20 +14,20 @@ public class EntityWorld {
 	private Logger m_logger;
 	private EntityPool m_entityPool;
 	private IntMap<Entity> m_entities;
-	private Pool[] m_componentsPools;
+	private ObjectMap<Class<? extends Component>, Pool<? extends Component>> m_componentsPools;
 	private Array<EntitySystem> m_systems;
 	private EntitySystemSorter m_systemSorter;
-	private int m_maxComponents;
 	private int m_maxEntities;
+	private int m_numComponents;
 	
-	public EntityWorld(int entityPoolSize, int maxComponents, int loggingLevel) {
+	public EntityWorld(int entityPoolSize, int numComponents, int loggingLevel) {
 		m_logger = new Logger("EntityWorld", loggingLevel);
 		m_logger.info("initializing");
-		m_maxComponents = maxComponents;
 		m_maxEntities = entityPoolSize;
+		m_numComponents = numComponents;
 		m_entityPool = new EntityPool(this, entityPoolSize);
 		m_entities = new IntMap<Entity>(entityPoolSize);
-		m_componentsPools = new Pool[maxComponents];
+		m_componentsPools = new ObjectMap<Class<? extends Component>, Pool<? extends Component>>(numComponents);
 		m_systems = new Array<EntitySystem>(true, 10);
 		m_systemSorter = new EntitySystemSorter();
 	}
@@ -92,50 +93,34 @@ public class EntityWorld {
 	}
 	
 	// COMPONENT METHODS
-	public void setComponentPool(Pool pool, int type) {
-		if (type < 0 || type >= m_maxComponents) {
-			m_logger.error("trying to set component pool for invalid type " + type);
-			return;
-		}
-		
+	public void setComponentPool(Class<? extends Component> c, Pool<? extends Component> pool) {
 		m_logger.info("adding component pool " + pool);
-		m_componentsPools[type] = pool;
+		m_componentsPools.put(c, pool);
 	}
 	
-	public Component createComponent(int type) {
-		if (type < 0 || type >= m_maxComponents) {
-			m_logger.error("trying to create component of invalid type " + type);
-			return null;
-		}
-		
-		Pool pool = m_componentsPools[type];
+	@SuppressWarnings("unchecked")
+	public <T extends Component> T createComponent(Class<? extends Component> c) {
+		Pool<? extends Component> pool = m_componentsPools.get(c);
 		
 		if (pool == null) {
-			m_logger.error("there is no pool for component of type " + type);
+			m_logger.error("there is no pool for component of class " + c);
 			return null;
 		}
 		
-		Component c =  (Component)pool.obtain();
-		m_logger.info("created " + c);
-		return c;
+		T component =  (T)pool.obtain();
+		m_logger.info("created " + component);
+		return component;
 	}
 
 	@SuppressWarnings("unchecked")
-	void freeComponent(Component c) {
-		int type = c.getType();
+	public void freeComponent(Component component) {
+		m_logger.info("deleting " + component);
 		
-		if (type < 0 || type >= m_maxComponents) {
-			m_logger.error("trying to free component of invalid type " + type);
-			return;
-		}
-		
-		m_logger.info("deleting " + c);
-		
-		Pool pool = m_componentsPools[c.getType()];
+		Pool pool = m_componentsPools.get(component.getClass());
 		
 		if (pool == null) return;
 		
-		pool.free(c);
+		pool.free((Component)component);
 	}
 	
 	private class EntityPool extends Pool<Entity> {
@@ -151,7 +136,7 @@ public class EntityWorld {
 		
 		@Override
 		protected Entity newObject() {
-			return new Entity(m_world, m_nextID++, m_maxComponents);
+			return new Entity(m_world, m_nextID++, m_numComponents);
 		}
 	}
 	

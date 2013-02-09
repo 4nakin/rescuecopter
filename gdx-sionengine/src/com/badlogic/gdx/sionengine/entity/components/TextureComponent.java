@@ -7,8 +7,6 @@ import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Component;
 
 public class TextureComponent extends Component implements AsynchronousAsset {
-
-	static private int s_type = generateType();
 	
 	private String m_file = null;
 	private TextureRegion m_region = null;
@@ -47,15 +45,6 @@ public class TextureComponent extends Component implements AsynchronousAsset {
 			SionEngine.getAssetManager().unload(m_file);
 			m_file = null;
 		}
-	}
-
-	@Override
-	public int getType() {
-		return s_type;
-	}
-	
-	public static int getComponentType() {
-		return s_type;
 	}
 	
 	@Override

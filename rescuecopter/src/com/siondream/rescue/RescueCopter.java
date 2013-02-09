@@ -25,11 +25,11 @@ public class RescueCopter extends SionEngine {
 		super.create();
 		
 		EntityWorld world = getEntityWorld();
-		world.setComponentPool(new TransformPool(), Transform.getComponentType());
-		world.setComponentPool(new PhysicsPool(), Physics.getComponentType());
-		world.setComponentPool(new AnimatedSpritePool(), AnimatedSprite.getComponentType());
-		world.setComponentPool(new StatePool(), State.getComponentType());
-		world.setComponentPool(new AssetPool(), Asset.getComponentType());
+		world.setComponentPool(Transform.class, new TransformPool());
+		world.setComponentPool(Physics.class, new PhysicsPool());
+		world.setComponentPool(AnimatedSprite.class, new AnimatedSpritePool());
+		world.setComponentPool(State.class, new StatePool());
+		world.setComponentPool(Asset.class, new AssetPool());
 		
 		Settings settings = getSettings();
 		

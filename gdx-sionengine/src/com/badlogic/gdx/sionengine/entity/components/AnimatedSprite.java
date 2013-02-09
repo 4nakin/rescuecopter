@@ -13,8 +13,6 @@ import com.badlogic.gdx.sionengine.animation.AnimationData;
 import com.badlogic.gdx.sionengine.entity.Component;
 
 public class AnimatedSprite extends Component implements AsynchronousAsset {
-	static private int s_type = generateType();
-	
 	// Vertices size
 	public static final int VertexSize = 2 + 1 + 2;
 	public static final int SpriteSize = 4 * VertexSize;
@@ -223,16 +221,7 @@ public class AnimatedSprite extends Component implements AsynchronousAsset {
 			m_file = null;
 		}
 	}
-
-	@Override
-	public int getType() {
-		return s_type;
-	}
 	
-	public static int getComponentType() {
-		return s_type;
-	}
-
 	@Override
 	public void fetchAssets() {
 		AssetManager manager = SionEngine.getAssetManager();

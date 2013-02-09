@@ -3,35 +3,35 @@ package com.badlogic.gdx.sionengine.entity;
 import com.badlogic.gdx.utils.Array;
 
 public class Aspect {
-	Array<Integer> m_all = new Array<Integer>();
-	Array<Integer> m_any = new Array<Integer>();
-	Array<Integer> m_none = new Array<Integer>();
+	Array<Class<? extends Component>> m_all = new Array<Class<? extends Component>>();
+	Array<Class<? extends Component>> m_any = new Array<Class<? extends Component>>();
+	Array<Class<? extends Component>> m_none = new Array<Class<? extends Component>>();
 	
-	public void addToAll(int componentType) {
-		m_all.add(componentType);
+	public void addToAll(Class<? extends Component> componentClass) {
+		m_all.add(componentClass);
 	}
 	
-	public void addToAny(int componentType) {
-		m_any.add(componentType);
+	public void addToAny(Class<? extends Component> componentClass) {
+		m_any.add(componentClass);
 	}
 	
-	public void addToNone(int componentType) {
-		m_none.add(componentType);
+	public void addToNone(Class<? extends Component> componentClass) {
+		m_none.add(componentClass);
 	}
 	
 	public boolean check(Entity e) {
-		for (Integer type : m_all) {
-			if (!e.hasComponent(type)) return false;
+		for (Class<? extends Component> c : m_all) {
+			if (!e.hasComponent(c)) return false;
 		}
 		
-		for (Integer type : m_none) {
-			if (e.hasComponent(type)) return false;
+		for (Class<? extends Component> c : m_none) {
+			if (e.hasComponent(c)) return false;
 		}
 		
 		if (m_any.size == 0) return true;
 		
-		for (Integer type : m_any) {
-			if (e.hasComponent(type)) return true;
+		for (Class<? extends Component> c : m_any) {
+			if (e.hasComponent(c)) return true;
 		}
 		
 		return false;

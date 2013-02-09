@@ -46,7 +46,7 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 		
 		super(world, priority, loggingLevel);
 		m_logger.info("initializing");
-		m_aspect.addToAll(Physics.getComponentType());
+		m_aspect.addToAll(Physics.class);
 		m_box2DWorld = box2DWorld;
 		m_camera = camera;
 		m_handlers = new ObjectMap<Integer, ObjectMap<Integer, CollisionHandler>>();
@@ -81,8 +81,8 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 	
 	@Override
 	protected void process(Entity e) {
-		Transform transform = (Transform)e.getComponent(Transform.getComponentType());
-		Physics physics = (Physics)e.getComponent(Physics.getComponentType());
+		Transform transform = (Transform)e.getComponent(Transform.class);
+		Physics physics = (Physics)e.getComponent(Physics.class);
 		
 		if (transform != null && physics.isLoaded()) {
 			Body body = physics.getBody();
@@ -175,20 +175,20 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 		entityA = (Entity)dataA;
 		entityB = (Entity)dataB;
 		
-		Type typeA = (Type)entityA.getComponent(Type.getComponentType());
-		Type typeB = (Type)entityB.getComponent(Type.getComponentType());
+		Type typeA = (Type)entityA.getComponent(Type.class);
+		Type typeB = (Type)entityB.getComponent(Type.class);
 		
 		if (typeA == null || typeB == null) {
 			return null;
 		}
 		
-		ObjectMap<Integer, CollisionHandler> collection = m_handlers.get(typeA.getType());
+		ObjectMap<Integer, CollisionHandler> collection = m_handlers.get(typeA.get());
 		
 		if (collection == null) {
 			return null;
 		}
 		
-		return collection.get(typeB.getType());
+		return collection.get(typeB.get());
 	}
 	
 	private void addCollisionHandlerAux(Integer typeA, Integer typeB, CollisionHandler handler) {

@@ -5,8 +5,6 @@ import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Component;
 
 public class Type extends Component {
-	static private int s_type = generateType();
-	
 	int m_type = Globals.type_invalid;;
 
 	public int get() {
@@ -20,15 +18,6 @@ public class Type extends Component {
 	@Override
 	public void reset() {
 		m_type = Globals.type_invalid;
-	}
-
-	@Override
-	public int getType() {
-		return s_type;
-	}
-	
-	public static int getComponentType() {
-		return s_type;
 	}
 	
 	@Override

@@ -139,11 +139,11 @@ public class GameScreen implements Screen, InputProcessor {
 	private void createCaveman() {
 		EntityWorld world = SionEngine.getEntityWorld();
 		Entity entity = world.createEntity();
-		Transform transform = (Transform)world.createComponent(Transform.getComponentType());
-		AnimatedSprite anim = (AnimatedSprite)world.createComponent(AnimatedSprite.getComponentType());
-		Physics physics = (Physics)world.createComponent(Physics.getComponentType());
-		State state = (State)world.createComponent(State.getComponentType());
-		Asset asset = (Asset)world.createComponent(Asset.getComponentType());
+		Transform transform = world.createComponent(Transform.class);
+		AnimatedSprite anim = world.createComponent(AnimatedSprite.class);
+		Physics physics = world.createComponent(Physics.class);
+		State state = world.createComponent(State.class);
+		Asset asset = world.createComponent(Asset.class);
 		anim.setFileName("data/caveman.xml");
 		physics.setFileName("data/caveman_physics.xml");
 		state.set(Globals.state_idle);

@@ -1,51 +1,47 @@
 package com.badlogic.gdx.sionengine.entity;
 
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectMap.Values;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
 public class Entity implements Poolable {
 	EntityWorld m_world;
 	int m_id;
-	Component[] m_components;
-	Array<Component> m_validComponents;
+	ObjectMap<Class<? extends Component>, Component> m_components;
 	
 	Entity(EntityWorld world, int id, int numComponents) {
 		m_world = world;
 		m_id = id;
-		m_components = new Component[numComponents];
-		m_validComponents = new Array<Component>(numComponents);
+		m_components = new ObjectMap<Class<? extends Component>, Component>(numComponents);
 	}
 	
 	public void addComponent(Component c) {
 		if (c == null) return;
-		m_components[c.getType()] = c;
-		m_validComponents.add(c);
+		m_components.put(c.getClass(), c);
 	}
 	
-	public Component getComponent(int type) {
-		if (type < 0 || type >= m_components.length) return null;
-		return m_components[type];
+	@SuppressWarnings("unchecked")
+	public <T extends Component> T getComponent(Class<T> c) {
+		return (T) m_components.get(c);
 	}
 	
-	public boolean hasComponent(int type) {
-		if (type < 0 || type >= m_components.length) return false;
-		return m_components[type] != null;
+	public boolean hasComponent(Class<? extends Component> c) {
+		return m_components.containsKey(c);
 	}
 	
-	public Array<Component> getComponents() {
-		return m_validComponents;
+	public Values<Component> getComponents() {
+		return m_components.values();
 	}
 
 	@Override
 	public void reset() {
-		for (int i = 0; i < m_components.length; ++i) {
-			if (m_components[i] != null) {
-				m_world.freeComponent(m_components[i]);
-				m_components[i] = null;
-			}
+		Values<Component> values = getComponents();
+		
+		while(values.hasNext()) {
+			m_world.freeComponent(values.next());
 		}
 		
-		m_validComponents.clear();
+		m_components.clear();
 	}
 	
 	@Override

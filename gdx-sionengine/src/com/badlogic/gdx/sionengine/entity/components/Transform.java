@@ -4,8 +4,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.sionengine.entity.Component;
 
 public class Transform extends Component {
-
-	static private int s_type = generateType();
 	
 	private Vector3 m_position = Vector3.Zero.cpy();
 	private float m_rotation = 0.0f;
@@ -40,15 +38,6 @@ public class Transform extends Component {
 		m_position.x = m_position.y = m_position.z = 0.0f;
 		m_rotation = 0.0f;
 		m_scale = 1.0f;
-	}
-
-	@Override
-	public int getType() {
-		return s_type;
-	}
-	
-	public static int getComponentType() {
-		return s_type;
 	}
 	
 	@Override
