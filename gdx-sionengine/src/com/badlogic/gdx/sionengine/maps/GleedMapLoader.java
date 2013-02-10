@@ -242,7 +242,12 @@ public class GleedMapLoader  extends AsynchronousAssetLoader<Map, GleedMapLoader
 				mapObject = loadTexture(item);
 			}
 			else if (type.equals("PathItem")) {
-				mapObject = loadPolygon(item);
+				if (isPolygon(item)) {
+					mapObject = loadPolygon(item);
+				}
+				else {
+					mapObject = loadPolyline(item);
+				}
 			}
 			else if (type.equals("RectangleItem")) {
 				mapObject = loadRectangle(item);
@@ -359,5 +364,29 @@ public class GleedMapLoader  extends AsynchronousAssetLoader<Map, GleedMapLoader
 		polygon.setColor(loadColor(item.getChildByName("LineColor")));
 		
 		return polygon;
+	}
+	
+	private PolylineMapObject loadPolyline(Element item) {
+		PolylineMapObject polyline = new PolylineMapObject();
+		
+		loadObject(item, polyline);
+		
+		Array<Element> pointElements = item.getChildByName("WorldPoints").getChildrenByName("Vector2");
+		float[] vertices = new float[pointElements.size * 2];
+		
+		for (int j = 0; j < pointElements.size; ++j) {
+			Element pointElement = pointElements.get(j);
+			vertices[j * 2] = Float.parseFloat(pointElement.getChildByName("X").getText());
+			vertices[j * 2 + 1] = -Float.parseFloat(pointElement.getChildByName("Y").getText());
+		}
+		
+		polyline.setPolygon(new Polygon(vertices));
+		polyline.setColor(loadColor(item.getChildByName("LineColor")));
+		
+		return polyline;
+	}
+	
+	private boolean isPolygon(Element item) {
+		return Boolean.parseBoolean(item.getChildByName("IsPolygon").getText());
 	}
 }

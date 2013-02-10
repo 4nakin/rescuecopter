@@ -99,10 +99,10 @@ public class GameScreen implements Screen, InputProcessor {
 		}
 		
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			SionEngine.getCamera().zoom += 0.05f;
+			SionEngine.getCamera().zoom += 0.01f;
 		}
 		else if (Gdx.input.isKeyPressed(Input.Keys.F)) {
-			SionEngine.getCamera().zoom -= 0.05f;
+			SionEngine.getCamera().zoom -= 0.01f;
 		}
 	}
 

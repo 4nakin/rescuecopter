@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -97,6 +98,21 @@ public class MapBodyManager {
 				
 				polygon.set(worldVertices);
 				shape = polygon;
+			}
+			else if (object instanceof PolylineMapObject) {
+				PolylineMapObject polylineObject = (PolylineMapObject)object;
+				float[] vertices = polylineObject.getPolygon().getVertices();
+				Vector2[] worldVertices = new Vector2[vertices.length / 2];
+				
+				for (int i = 0; i < vertices.length / 2; ++i) {
+					worldVertices[i] = new Vector2();
+					worldVertices[i].x = vertices[i * 2] * units;
+					worldVertices[i].y = vertices[i * 2 + 1] * units;
+				}
+				
+				ChainShape chain = new ChainShape(); 
+				chain.createChain(worldVertices);
+				shape = chain;
 			}
 			else if (object instanceof CircleMapObject) {
 				CircleMapObject circleObject = (CircleMapObject)object;
