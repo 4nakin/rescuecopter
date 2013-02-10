@@ -18,7 +18,7 @@ public class PolygonMapObject extends MapObject {
 	}
 	
 	public PolygonMapObject() {
-		this(new float[0]);
+		
 	}
 	
 	public PolygonMapObject(float[] vertices) {

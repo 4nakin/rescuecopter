@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.sionengine.Globals;
@@ -15,6 +16,8 @@ import com.badlogic.gdx.sionengine.entity.components.Asset;
 import com.badlogic.gdx.sionengine.entity.components.Physics;
 import com.badlogic.gdx.sionengine.entity.components.State;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
+import com.badlogic.gdx.sionengine.maps.GleedMapRenderer;
+import com.badlogic.gdx.sionengine.maps.Map;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Logger;
 
@@ -31,6 +34,9 @@ public class GameScreen implements Screen, InputProcessor {
 	private Logger m_logger = new Logger("GameScreen", Logger.INFO);  
 	private ScreenState m_state = ScreenState.Loading;
 	private Array<Entity> m_entities = new Array<Entity>();
+	private Map m_map;
+	private GleedMapRenderer m_mapRenderer;
+	private MapBodyManager m_mapBodyManager = new MapBodyManager();
 	
 	public GameScreen(SionEngine engine) {
 		
@@ -44,8 +50,11 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
+		m_mapBodyManager.destroyPhysics();
+		m_map = null;
+		m_mapRenderer = null;
+		SionEngine.getAssetManager().unload("data/level.xml");
+
 	}
 
 	@Override
@@ -56,22 +65,44 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public void render(float delta) {
-		//SionEngine.getAssetManager().update();
+		
+		
+		if (m_state == ScreenState.Loading && SionEngine.getAssetManager().update()) {
+			m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
+			m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
+			m_mapBodyManager.createPhysics(m_map, "Physics");
+			m_state = ScreenState.Playing;
+		}
+		
+		if (m_mapRenderer != null) {
+			m_mapRenderer.begin();
+			m_mapRenderer.render(SionEngine.getCamera());
+			m_mapRenderer.end();
+		}
+		
 		SionEngine.getEntityWorld().update();
+		
 		Vector3 cameraPos = SionEngine.getCamera().position;
 		
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			cameraPos.x -= 5.0f;
+			cameraPos.x -= 1.0f;
 		}
 		else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			cameraPos.x += 5.0f;
+			cameraPos.x += 1.0f;
 		}
 		
 		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			cameraPos.y += 5.0f;
+			cameraPos.y += 1.0f;
 		}
 		else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			cameraPos.y -= 5.0f;
+			cameraPos.y -= 1.0f;
+		}
+		
+		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+			SionEngine.getCamera().zoom += 0.05f;
+		}
+		else if (Gdx.input.isKeyPressed(Input.Keys.F)) {
+			SionEngine.getCamera().zoom -= 0.05f;
 		}
 	}
 
@@ -90,6 +121,9 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(this);
+		
+		SionEngine.getAssetManager().load("data/level.xml", Map.class);
+		m_state = ScreenState.Loading;
 	}
 
 	public boolean keyDown(int keycode) {

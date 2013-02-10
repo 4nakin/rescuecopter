@@ -289,7 +289,7 @@ public class GleedMapLoader  extends AsynchronousAssetLoader<Map, GleedMapLoader
 		}
 		
 		region.flip(Boolean.parseBoolean(item.getChildByName("FlipHorizontally").getText()),
-						Boolean.parseBoolean(item.getChildByName("FlipVertically").getText()));
+					Boolean.parseBoolean(item.getChildByName("FlipVertically").getText()));
 		
 		texture.setTextureRegion(region);
 		
@@ -334,9 +334,9 @@ public class GleedMapLoader  extends AsynchronousAssetLoader<Map, GleedMapLoader
 		
 		Element position = item.getChildByName("Position");
 		rectangle.getRectangle().set(Float.parseFloat(position.getChildByName("X").getText()),
-											  Float.parseFloat(position.getChildByName("Y").getText()),
-											  Float.parseFloat(item.getChildByName("Width").getText()),
-											  Float.parseFloat(item.getChildByName("Height").getText()));
+									 -Float.parseFloat(position.getChildByName("Y").getText()),
+									 Float.parseFloat(item.getChildByName("Width").getText()),
+									 Float.parseFloat(item.getChildByName("Height").getText()));
 		
 		return rectangle;
 	}

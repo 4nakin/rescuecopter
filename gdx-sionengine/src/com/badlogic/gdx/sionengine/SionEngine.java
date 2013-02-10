@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -20,6 +22,8 @@ import com.badlogic.gdx.sionengine.animation.AnimationData;
 import com.badlogic.gdx.sionengine.animation.AnimationLoader;
 import com.badlogic.gdx.sionengine.entity.EntityWorld;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
+import com.badlogic.gdx.sionengine.maps.GleedMapLoader;
+import com.badlogic.gdx.sionengine.maps.Map;
 import com.badlogic.gdx.sionengine.physics.PhysicsData;
 import com.badlogic.gdx.sionengine.physics.PhysicsLoader;
 import com.badlogic.gdx.sionengine.tweeners.CameraTweener;
@@ -51,6 +55,7 @@ public class SionEngine extends Game {
 	private Rectangle m_viewport = new Rectangle(0, 0, 0, 0);
 	private float m_aspectRatio;
 	
+	private ShapeRenderer m_shapeRenderer;
 	
 	@Override
 	public void create() {
@@ -63,6 +68,7 @@ public class SionEngine extends Game {
 		m_assetManager = new AssetManager();
 		m_assetManager.setLoader(AnimationData.class, new AnimationLoader(new InternalFileHandleResolver()));
 		m_assetManager.setLoader(PhysicsData.class, new PhysicsLoader(new InternalFileHandleResolver()));
+		m_assetManager.setLoader(Map.class, new GleedMapLoader(new InternalFileHandleResolver()));
 		
 		m_tweenManager = new TweenManager();
 		Tween.registerAccessor(Transform.class, new TransformTweener());
@@ -93,6 +99,8 @@ public class SionEngine extends Game {
 		m_camera = new OrthographicCamera(m_virtualWidth, m_virtualHeight);
 		m_camera.zoom = m_unitsPerPixel;
 		
+		m_shapeRenderer = new ShapeRenderer();
+		
 		Gdx.graphics.setTitle(m_settings.getString("windowTitle", "SionEngine"));
 		Gdx.graphics.setDisplayMode(m_virtualWidth, m_virtualHeight, m_settings.getBoolean("fullScreen", false));
 	}
@@ -100,7 +108,7 @@ public class SionEngine extends Game {
 	@Override
 	public void render () {
 		
-		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glEnable(GL10.GL_BLEND);
 		
@@ -113,6 +121,14 @@ public class SionEngine extends Game {
 						  (int) m_viewport.height);
 		
 		super.render();
+		
+		m_shapeRenderer.setProjectionMatrix(m_camera.combined);
+		m_shapeRenderer.begin(ShapeType.Line);
+		m_shapeRenderer.setColor(1.0f, 0.0f, 0.0f, 1.0f);
+		m_shapeRenderer.line(0.0f, -m_virtualHeight * 0.5f * m_unitsPerPixel, 0.0f, m_virtualHeight * 0.5f * m_unitsPerPixel);
+		m_shapeRenderer.line(-m_virtualWidth * 0.5f * m_unitsPerPixel, 0.0f, m_virtualWidth * 0.5f * m_unitsPerPixel, 0.0f);
+		m_shapeRenderer.end();
+		
 		
 		applyScreenChange();
 	}

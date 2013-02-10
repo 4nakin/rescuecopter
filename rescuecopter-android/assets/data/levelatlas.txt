@@ -1,0 +1,81 @@
+levelatlas.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+09
+  rotate: false
+  xy: 2, 2
+  size: 435, 85
+  orig: 435, 85
+  offset: 0, 0
+  index: -1
+10
+  rotate: false
+  xy: 2, 319
+  size: 111, 145
+  orig: 111, 145
+  offset: 0, 0
+  index: -1
+11
+  rotate: false
+  xy: 274, 159
+  size: 223, 106
+  orig: 223, 106
+  offset: 0, 0
+  index: -1
+01
+  rotate: false
+  xy: 2, 89
+  size: 286, 60
+  orig: 286, 60
+  offset: 0, 0
+  index: -1
+02
+  rotate: false
+  xy: 2, 151
+  size: 270, 62
+  orig: 270, 62
+  offset: 0, 0
+  index: -1
+03
+  rotate: false
+  xy: 2, 215
+  size: 216, 35
+  orig: 216, 35
+  offset: 0, 0
+  index: -1
+04
+  rotate: false
+  xy: 258, 355
+  size: 116, 75
+  orig: 116, 75
+  offset: 0, 0
+  index: -1
+05
+  rotate: false
+  xy: 290, 89
+  size: 220, 68
+  orig: 220, 68
+  offset: 0, 0
+  index: -1
+06
+  rotate: false
+  xy: 115, 319
+  size: 141, 121
+  orig: 141, 121
+  offset: 0, 0
+  index: -1
+07
+  rotate: false
+  xy: 2, 252
+  size: 211, 65
+  orig: 211, 65
+  offset: 0, 0
+  index: -1
+08
+  rotate: false
+  xy: 258, 267
+  size: 169, 86
+  orig: 169, 86
+  offset: 0, 0
+  index: -1

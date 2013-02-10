@@ -215,32 +215,23 @@ public class GleedMapRenderer implements MapRenderer, Disposable {
 			setBounds(texture);
 
 			// If the image is in the frustum, draw it (culling)
-			if (m_cameraRectangle.overlaps(m_box) ||
-				 m_cameraRectangle.contains(m_box) ||
-				 m_box.contains(m_cameraRectangle)) {
+//			if (m_cameraRectangle.overlaps(m_box) ||
+//				 m_cameraRectangle.contains(m_box) ||
+//				 m_box.contains(m_cameraRectangle)) {
 			
 				// Skip complex rendering if there is no scaling nor rotation
-				if (texture.getRotation() == 0 &&
-					 texture.getScaleX() == 1.0f &&
-					 texture.getScaleY() == 1.0f) {
-					
-					m_batch.draw(texture.getTextureRegion(),
-									 texture.getX() * m_units - texture.getOriginX(),
-									 texture.getY() * m_units - texture.getOriginY());
-				}
-				else {
-					m_batch.draw(texture.getTextureRegion(),
-									 texture.getX() * m_units - texture.getOriginX(),
-									 texture.getY() * m_units - texture.getOriginY(),
-									 texture.getOriginX(),
-									 texture.getOriginY(),
-									 texture.getTextureRegion().getRegionWidth(),
-									 texture.getTextureRegion().getRegionHeight(),
-									 texture.getScaleX() * m_units,
-									 texture.getScaleY() * m_units,
-									 -MathUtils.radiansToDegrees * texture.getRotation());
-				}
-			}
+
+				m_batch.draw(texture.getTextureRegion(),
+						texture.getX() * m_units - texture.getOriginX(),
+						 texture.getY() * m_units - texture.getOriginY(),
+						 texture.getOriginX(),
+						 texture.getOriginY(),
+						 texture.getTextureRegion().getRegionWidth(),
+						 texture.getTextureRegion().getRegionHeight(),
+						 texture.getScaleX() * m_units,
+						 texture.getScaleY() * m_units,
+						 -MathUtils.radiansToDegrees * texture.getRotation());
+//			}
 		}
 	}
 
