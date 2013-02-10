@@ -57,6 +57,12 @@ public class MapBodyManager {
 		float units = SionEngine.getUnitsPerPixel();
 		
 		MapLayer layer = map.getLayers().getLayer(layerName);
+		
+		if (layer == null) {
+			m_logger.error("layer " + layerName + " does not exist");
+			return;
+		}
+		
 		MapObjects objects = layer.getObjects();
 		Iterator<MapObject> objectIt = objects.iterator();
 			
