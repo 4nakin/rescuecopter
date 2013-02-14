@@ -15,7 +15,8 @@ public class EntityWorld {
 	private EntityPool m_entityPool;
 	private IntMap<Entity> m_entities;
 	private ObjectMap<Class<? extends Component>, Pool<? extends Component>> m_componentsPools;
-	private Array<EntitySystem> m_systems;
+	private Array<EntitySystem> m_orderedSystems;
+	private ObjectMap<Class<? extends EntitySystem>, EntitySystem> m_systems;
 	private EntitySystemSorter m_systemSorter;
 	private int m_maxEntities;
 	private int m_numComponents;
@@ -28,17 +29,18 @@ public class EntityWorld {
 		m_entityPool = new EntityPool(this, entityPoolSize);
 		m_entities = new IntMap<Entity>(entityPoolSize);
 		m_componentsPools = new ObjectMap<Class<? extends Component>, Pool<? extends Component>>(numComponents);
-		m_systems = new Array<EntitySystem>(true, 10);
+		m_orderedSystems = new Array<EntitySystem>(true, 10);
+		m_systems = new ObjectMap<Class<? extends EntitySystem>, EntitySystem>();
 		m_systemSorter = new EntitySystemSorter();
 	}
 	
 	public void prepare() {
 		m_logger.info("preparing entity systems");
-		m_systems.sort(m_systemSorter);
+		m_orderedSystems.sort(m_systemSorter);
 	}
 	
 	public void update() {
-		for(EntitySystem system : m_systems) {
+		for(EntitySystem system : m_orderedSystems) {
 			system.begin();
 			system.update();
 			system.end();
@@ -61,7 +63,7 @@ public class EntityWorld {
 	public void deleteEntity(Entity e) {
 		m_logger.info("deleting " + e);
 		
-		for (EntitySystem system : m_systems) {
+		for (EntitySystem system : m_orderedSystems) {
 			system.entityDeleted(e);
 		}
 		
@@ -72,7 +74,7 @@ public class EntityWorld {
 	public void addEntity(Entity e) {
 		m_logger.info("adding " + e);
 		
-		for (EntitySystem system : m_systems) {
+		for (EntitySystem system : m_orderedSystems) {
 			system.entityAdded(e);
 		}
 	}
@@ -89,7 +91,13 @@ public class EntityWorld {
 	// ENTITY SYSTEMS METHODS
 	public void addSystem(EntitySystem system) {
 		m_logger.info("adding system " + system);
-		m_systems.add(system);
+		m_systems.put(system.getClass(), system);
+		m_orderedSystems.add(system);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends EntitySystem> T getSystem(Class<T> system) {
+		return (T) m_systems.get(system);
 	}
 	
 	// COMPONENT METHODS

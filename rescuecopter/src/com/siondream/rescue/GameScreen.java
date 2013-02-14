@@ -68,9 +68,7 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		
 		if (m_state == ScreenState.Loading && SionEngine.getAssetManager().update()) {
-			m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
-			m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
-			m_mapBodyManager.createPhysics(m_map, "Physics");
+			prepareLevel();
 			m_state = ScreenState.Playing;
 		}
 		
@@ -127,10 +125,6 @@ public class GameScreen implements Screen, InputProcessor {
 	}
 
 	public boolean keyDown(int keycode) {
-		if (keycode == Input.Keys.A)
-			createCaveman();
-		if (keycode == Input.Keys.S)
-			deleteCaveman();
 			
 		return false;
 	}
@@ -170,7 +164,14 @@ public class GameScreen implements Screen, InputProcessor {
 		return false;
 	}
 	
-	private void createCaveman() {
+	private void prepareLevel() {
+		m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
+		m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
+		m_mapBodyManager.createPhysics(m_map, "Physics");
+		createSpaceShip();
+	}
+	
+	private void createSpaceShip() {
 		EntityWorld world = SionEngine.getEntityWorld();
 		Entity entity = world.createEntity();
 		Transform transform = world.createComponent(Transform.class);
@@ -178,8 +179,9 @@ public class GameScreen implements Screen, InputProcessor {
 		Physics physics = world.createComponent(Physics.class);
 		State state = world.createComponent(State.class);
 		Asset asset = world.createComponent(Asset.class);
-		anim.setFileName("data/caveman.xml");
-		physics.setFileName("data/caveman_physics.xml");
+		anim.setFileName("data/spaceship.xml");
+		physics.setFileName("data/spaceship_physics.xml");
+		physics.setWakeUp(true);
 		state.set(Globals.state_idle);
 		Vector3 position = transform.getPosition();
 		position.x = MathUtils.random(-SionEngine.getVirtualWidth() * 0.5f * SionEngine.getUnitsPerPixel(), SionEngine.getVirtualWidth() * 0.5f * SionEngine.getUnitsPerPixel());
@@ -190,16 +192,9 @@ public class GameScreen implements Screen, InputProcessor {
 		entity.addComponent(state);
 		entity.addComponent(asset);
 		entity.addComponent(physics);
+		entity.addComponent(new SpaceShip());
 		world.addEntity(entity);
 		m_entities.add(entity);
 		m_logger.info("Created caveman in " + position);
-	}
-	
-	private void deleteCaveman() {
-		if (m_entities.size > 0) {
-			int index = MathUtils.random(m_entities.size - 1);
-			SionEngine.getEntityWorld().deleteEntity(m_entities.get(index));
-			m_entities.removeIndex(index);
-		}
 	}
 }

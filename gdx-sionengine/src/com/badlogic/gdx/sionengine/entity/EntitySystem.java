@@ -3,7 +3,7 @@ package com.badlogic.gdx.sionengine.entity;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Logger;
 
-public abstract class EntitySystem {
+public abstract class EntitySystem implements EntityObserver {
 
 	protected Array<Entity> m_entities;
 	protected EntityWorld m_world;
@@ -38,14 +38,16 @@ public abstract class EntitySystem {
 		}
 	}
 	
-	final void entityAdded(Entity e) {
+	@Override
+	final public void entityAdded(Entity e) {
 		if (m_aspect.check(e)) {
 			m_logger.info("adding entity " + e + " to " + this);
 			m_entities.add(e);
 		}
 	}
 	
-	final void entityDeleted(Entity e) {
+	@Override
+	final public void entityDeleted(Entity e) {
 		if (m_entities.removeValue(e, true)) {
 			m_logger.info("adding entity " + e + " to " + this);
 		}

@@ -127,7 +127,7 @@ public class AnimatedSprite extends Component implements AsynchronousAsset {
 	public void applyTransform(Vector3 position, float angle, float scale) {
 		if (!m_position.equals(position) || m_angle != angle || m_scale != scale) {
 			m_position.set(position);
-			m_scale = scale * SionEngine.getUnitsPerPixel();
+			m_scale = scale;
 			m_angle = angle;
 			m_dirty = true;
 		}
@@ -143,19 +143,21 @@ public class AnimatedSprite extends Component implements AsynchronousAsset {
 			float localY = -m_origin.y;
 			float localX2 = localX + m_size.x;
 			float localY2 = localY + m_size.y;
+
+			float finalScale = m_scale * SionEngine.getUnitsPerPixel();
 			
 			// Apply scale
-			if (m_scale != 1) {
-				localX *= m_scale;
-				localY *= m_scale;
-				localX2 *= m_scale;
-				localY2 *= m_scale;
+			if (finalScale != 1.0) {
+				localX *= finalScale;
+				localY *= finalScale;
+				localX2 *= finalScale;
+				localY2 *= finalScale;
 			}
 			
 			// Apply rotation
-			if (m_angle != 0) {
-				final float cos = MathUtils.cosDeg(m_angle);
-				final float sin = MathUtils.sinDeg(m_angle);
+			if (m_angle != 0.0f) {
+				final float cos = MathUtils.cos(m_angle);
+				final float sin = MathUtils.sin(m_angle);
 				final float localXCos = localX * cos;
 				final float localXSin = localX * sin;
 				final float localYCos = localY * cos;
@@ -183,7 +185,6 @@ public class AnimatedSprite extends Component implements AsynchronousAsset {
 				m_vertices[X4] = x1 + (x3 - x2);
 				m_vertices[Y4] = y3 - (y2 - y1);
 			}
-
 			else {
 				final float x1 = localX + m_position.x;
 				final float y1 = localY + m_position.y;

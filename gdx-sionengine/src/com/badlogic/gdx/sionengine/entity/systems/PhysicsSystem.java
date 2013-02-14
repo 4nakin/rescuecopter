@@ -99,6 +99,11 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 				position2D.y = position.y;
 				body.setTransform(position2D,
 								  transform.getRotation());
+				
+				if (physics.getWakeUp()) {
+					body.setActive(true);
+					physics.setWakeUp(false);
+				}
 			}
 		}
 	}

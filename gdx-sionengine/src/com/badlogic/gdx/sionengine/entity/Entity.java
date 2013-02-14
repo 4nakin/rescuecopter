@@ -15,6 +15,10 @@ public class Entity implements Poolable {
 		m_components = new ObjectMap<Class<? extends Component>, Component>(numComponents);
 	}
 	
+	public int getID() {
+		return m_id;
+	}
+	
 	public void addComponent(Component c) {
 		if (c == null) return;
 		m_components.put(c.getClass(), c);

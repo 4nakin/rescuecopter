@@ -15,6 +15,7 @@ public class Physics extends Component implements AsynchronousAsset {
 	private String m_file = null;
 	private Body m_body = null;
 	private Object m_userData = null;
+	private boolean m_wakeUp = false;
 	
 	public void setFileName(String file) {
 		if (m_file != file) {
@@ -38,6 +39,14 @@ public class Physics extends Component implements AsynchronousAsset {
 		if (m_body != null) {
 			m_body.setUserData(object);
 		}
+	}
+	
+	public void setWakeUp(boolean wakeUp) {
+		m_wakeUp = wakeUp;
+	}
+	
+	public boolean getWakeUp() {
+		return m_wakeUp;
 	}
 	
 	@Override
