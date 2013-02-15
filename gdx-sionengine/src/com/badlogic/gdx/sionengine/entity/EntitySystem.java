@@ -53,5 +53,10 @@ public abstract class EntitySystem implements EntityObserver {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		return "EntitySystem (" + m_priority + ")";
+	}
+	
 	abstract protected void process(Entity e);
 }

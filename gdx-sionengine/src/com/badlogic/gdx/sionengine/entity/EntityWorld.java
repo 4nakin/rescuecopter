@@ -2,6 +2,8 @@ package com.badlogic.gdx.sionengine.entity;
 
 import java.util.Comparator;
 
+import com.badlogic.gdx.sionengine.entity.managers.GroupManager;
+import com.badlogic.gdx.sionengine.entity.managers.TagManager;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
@@ -18,6 +20,7 @@ public class EntityWorld {
 	private Array<EntitySystem> m_orderedSystems;
 	private ObjectMap<Class<? extends EntitySystem>, EntitySystem> m_systems;
 	private EntitySystemSorter m_systemSorter;
+	private ObjectMap<Class<? extends EntityManager>, EntityManager> m_managers;
 	private int m_maxEntities;
 	private int m_numComponents;
 	
@@ -31,7 +34,12 @@ public class EntityWorld {
 		m_componentsPools = new ObjectMap<Class<? extends Component>, Pool<? extends Component>>(numComponents);
 		m_orderedSystems = new Array<EntitySystem>(true, 10);
 		m_systems = new ObjectMap<Class<? extends EntitySystem>, EntitySystem>();
+		m_managers = new ObjectMap<Class<? extends EntityManager>, EntityManager>();
 		m_systemSorter = new EntitySystemSorter();
+		
+		// Add default managers
+		addManager(new TagManager());
+		addManager(new GroupManager());
 	}
 	
 	public void prepare() {
@@ -98,6 +106,17 @@ public class EntityWorld {
 	@SuppressWarnings("unchecked")
 	public <T extends EntitySystem> T getSystem(Class<T> system) {
 		return (T) m_systems.get(system);
+	}
+	
+	// ENTITY MANAGER METHODS
+	public void addManager(EntityManager manager) {
+		m_logger.info("adding manager " + manager);
+		m_managers.put(manager.getClass(), manager);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends EntityManager> T getManager(Class<T> manager) {
+		return (T) m_managers.get(manager);
 	}
 	
 	// COMPONENT METHODS

@@ -338,10 +338,12 @@ public class GleedMapLoader  extends AsynchronousAssetLoader<Map, GleedMapLoader
 		rectangle.setColor(loadColor(item.getChildByName("FillColor")));
 		
 		Element position = item.getChildByName("Position");
-		rectangle.getRectangle().set(Float.parseFloat(position.getChildByName("X").getText()),
-									 -Float.parseFloat(position.getChildByName("Y").getText()),
-									 Float.parseFloat(item.getChildByName("Width").getText()),
-									 Float.parseFloat(item.getChildByName("Height").getText()));
+		float x = Float.parseFloat(position.getChildByName("X").getText());
+		float y = -Float.parseFloat(position.getChildByName("Y").getText());
+		float width = Float.parseFloat(item.getChildByName("Width").getText());
+		float height = Float.parseFloat(item.getChildByName("Height").getText());
+		
+		rectangle.getRectangle().set(x, y - height, width, height);
 		
 		return rectangle;
 	}

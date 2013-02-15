@@ -14,6 +14,7 @@ import com.badlogic.gdx.sionengine.entity.pools.PhysicsPool;
 import com.badlogic.gdx.sionengine.entity.pools.StatePool;
 import com.badlogic.gdx.sionengine.entity.pools.TransformPool;
 import com.badlogic.gdx.sionengine.entity.systems.AssetSystem;
+import com.badlogic.gdx.sionengine.entity.systems.DisposingSystem;
 import com.badlogic.gdx.sionengine.entity.systems.PhysicsSystem;
 import com.badlogic.gdx.sionengine.entity.systems.RenderingSystem;
 import com.badlogic.gdx.utils.Logger;
@@ -47,11 +48,19 @@ public class RescueCopter extends SionEngine {
 											 3,
 											 Logger.INFO));
 		
+		world.addSystem(new AbductionSystem(world,
+										    4,
+											Logger.INFO));
+		
 		world.addSystem(new PhysicsSystem(world,
-										  4,
+										  5,
 										  settings.getInt("physicsSystemLoggingLevel", Logger.INFO),
 										  SionEngine.getWorld(),
 										  SionEngine.getCamera()));
+		
+		world.addSystem(new DisposingSystem(world,
+										  	6,
+										  	settings.getInt("disposingSystemLoggingLevel", Logger.INFO)));
 		
 		world.prepare();
 		

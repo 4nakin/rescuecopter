@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sprite frameDuration="0.03333"
+		rows="1"
+		columns="1" >
+	
+	<animation name="state_idle" mode="loop" frames="0" />
+</sprite>

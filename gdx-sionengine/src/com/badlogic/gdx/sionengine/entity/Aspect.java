@@ -36,4 +36,29 @@ public class Aspect {
 		
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		String toString = "aspect all: (";
+		
+		for (Class<? extends Component> c : m_all) {
+			toString += c.getName() + " ";
+		}
+		
+		toString += ") any: (";
+		
+		for (Class<? extends Component> c : m_none) {
+			toString += c.getName() + " ";
+		}
+		
+		toString += ") none: (";
+		
+		for (Class<? extends Component> c : m_any) {
+			toString += c.getName() + " ";
+		}
+		
+		toString += ")";
+		
+		return toString;
+	}
 }

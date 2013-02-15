@@ -106,6 +106,14 @@ public class SionEngine extends Game {
 	}
 	
 	@Override
+	public void dispose() {
+		m_assetManager.dispose();
+		m_batch.dispose();
+		m_world.dispose();
+		m_shapeRenderer.dispose();
+	}
+	
+	@Override
 	public void render () {
 		
 		Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);

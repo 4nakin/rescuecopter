@@ -1556,6 +1556,106 @@
                 <Y>1</Y>
             </ScrollSpeed>
         </Layer>
+        <Layer Name="Camera" Visible="false">
+            <Items>
+                <Item xsi:type="RectangleItem" Name="bounds" Visible="true">
+                    <Position>
+                        <X>-977</X>
+                        <Y>-510</Y>
+                    </Position>
+                    <CustomProperties />
+                    <Width>1942</Width>
+                    <Height>1012</Height>
+                    <FillColor>
+                        <R>192</R>
+                        <G>0</G>
+                        <B>192</B>
+                        <A>145</A>
+                        <PackedValue>2445279424</PackedValue>
+                    </FillColor>
+                </Item>
+            </Items>
+            <ScrollSpeed>
+                <X>1</X>
+                <Y>1</Y>
+            </ScrollSpeed>
+        </Layer>
+        <Layer Name="Objects" Visible="true">
+            <Items>
+                <Item xsi:type="CircleItem" Name="player" Visible="true">
+                    <Position>
+                        <X>-704</X>
+                        <Y>29</Y>
+                    </Position>
+                    <CustomProperties />
+                    <Radius>20</Radius>
+                    <FillColor>
+                        <R>0</R>
+                        <G>128</G>
+                        <B>0</B>
+                        <A>145</A>
+                        <PackedValue>2432729088</PackedValue>
+                    </FillColor>
+                </Item>
+            </Items>
+            <ScrollSpeed>
+                <X>1</X>
+                <Y>1</Y>
+            </ScrollSpeed>
+        </Layer>
+        <Layer Name="astronauts" Visible="true">
+            <Items>
+                <Item xsi:type="CircleItem" Name="Circle_0042" Visible="true">
+                    <Position>
+                        <X>248</X>
+                        <Y>146</Y>
+                    </Position>
+                    <CustomProperties />
+                    <Radius>19.7230835</Radius>
+                    <FillColor>
+                        <R>192</R>
+                        <G>0</G>
+                        <B>192</B>
+                        <A>145</A>
+                        <PackedValue>2445279424</PackedValue>
+                    </FillColor>
+                </Item>
+                <Item xsi:type="CircleItem" Name="Circle_0043" Visible="true">
+                    <Position>
+                        <X>533</X>
+                        <Y>104</Y>
+                    </Position>
+                    <CustomProperties />
+                    <Radius>19.7230835</Radius>
+                    <FillColor>
+                        <R>192</R>
+                        <G>0</G>
+                        <B>192</B>
+                        <A>145</A>
+                        <PackedValue>2445279424</PackedValue>
+                    </FillColor>
+                </Item>
+                <Item xsi:type="CircleItem" Name="Circle_0044" Visible="true">
+                    <Position>
+                        <X>-155</X>
+                        <Y>156</Y>
+                    </Position>
+                    <CustomProperties />
+                    <Radius>19.7230835</Radius>
+                    <FillColor>
+                        <R>192</R>
+                        <G>0</G>
+                        <B>192</B>
+                        <A>145</A>
+                        <PackedValue>2445279424</PackedValue>
+                    </FillColor>
+                </Item>
+            </Items>
+            <ScrollSpeed>
+                <X>1</X>
+                <Y>1</Y>
+            </ScrollSpeed>
+        </Layer>
     </Layers>
     <CustomProperties>
         <Property Name="atlas" Type="string" Description="data/textureatlas.txt">
@@ -1563,11 +1663,11 @@
         </Property>
     </CustomProperties>
     <EditorRelated>
-        <NextItemNumber>38</NextItemNumber>
+        <NextItemNumber>44</NextItemNumber>
         <ContentRootFolder>C:\</ContentRootFolder>
         <CameraPosition>
-            <X>124.000374</X>
-            <Y>-166.000229</Y>
+            <X>24.0001774</X>
+            <Y>92.33361</Y>
         </CameraPosition>
         <Version>1.3.0.0</Version>
     </EditorRelated>
