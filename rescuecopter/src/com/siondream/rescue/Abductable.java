@@ -4,7 +4,7 @@ import com.badlogic.gdx.sionengine.entity.Component;
 
 public class Abductable extends Component {
 
-	static float s_abductionTime = 3.0f; 
+	static float s_abductionTime = 2.0f; 
 	float m_abductionTimer = s_abductionTime;
 	
 	static void setAbductionTime(float abductionTime) {

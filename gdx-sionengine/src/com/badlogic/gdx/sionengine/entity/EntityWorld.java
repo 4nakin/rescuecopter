@@ -49,9 +49,11 @@ public class EntityWorld {
 	
 	public void update() {
 		for(EntitySystem system : m_orderedSystems) {
-			system.begin();
-			system.update();
-			system.end();
+			if (system.checkProcessing()) {
+				system.begin();
+				system.update();
+				system.end();
+			}
 		}
 	}
 	

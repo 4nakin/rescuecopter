@@ -24,6 +24,10 @@ public abstract class EntitySystem implements EntityObserver {
 		return m_priority;
 	}
 	
+	public boolean checkProcessing() {
+		return true;
+	}
+	
 	public void begin() {
 		
 	}

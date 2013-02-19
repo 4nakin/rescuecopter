@@ -3,6 +3,6 @@
     <massData i="1.0" mass="5.0" />
     <fixture id="main" density="1.0" restitution="0.0" friction="0.8" >
         <filter categoryBits="0" maskBits="0" groupIndex="0" />
-        <shape type="polygon" width ="0.9" height="2.2f" centerX="0.0" centerY="0.0" />
+        <shape type="polygon" width ="0.7" height="1.7f" centerX="0.0" centerY="0.0" />
     </fixture>
 </body>
