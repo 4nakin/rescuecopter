@@ -4,6 +4,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
@@ -54,14 +55,21 @@ public class CollisionHandlingSystem extends EntitySystem {
 
 		@Override
 		public void beginContact(Contact contact, Entity entityA, Entity entityB) {
+			contact.ResetRestitution();
 			Entity entity = entityA != null? entityA : entityB;
-			SpaceShip ship = entity.getComponent(SpaceShip.class);
-			ship.reduceEnergy(SionEngine.getSettings().getFloat("g_spaceShipCollisionDamage", 10.0f));
-			m_logger.info("ship collision energy " + ship.getEnergy());
 			
-			if (ship.getEnergy() <= 0.0f) {
-				GameScreen gameScreen = (GameScreen)m_game.getScreen("GameScreen");
-				gameScreen.setState(ScreenState.Lose);
+			State state = entity.getComponent(State.class);
+			
+			if (state.get() != GameGlobals.state_hit) {
+				SpaceShip ship = entity.getComponent(SpaceShip.class);
+				ship.reduceEnergy(SionEngine.getSettings().getFloat("g_spaceShipCollisionDamage", 10.0f));
+				state.set(GameGlobals.state_hit);
+				m_logger.info("ship collision energy " + ship.getEnergy());
+				
+				if (ship.getEnergy() <= 0.0f) {
+					GameScreen gameScreen = (GameScreen)m_game.getScreen("GameScreen");
+					gameScreen.setState(ScreenState.Lose);
+				}
 			}
 		}
 
