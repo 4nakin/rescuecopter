@@ -216,6 +216,10 @@ public class AnimatedSprite extends Component implements AsynchronousAsset {
 		m_flipX = false;
 		m_flipY = false;
 		m_dirty = true;
+		m_color.r = 1.0f;
+		m_color.g = 1.0f;
+		m_color.b = 1.0f;
+		m_color.a = 1.0f;
 		
 		if (m_file != null) {
 			SionEngine.getAssetManager().unload(m_file);

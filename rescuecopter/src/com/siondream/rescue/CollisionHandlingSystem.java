@@ -1,5 +1,6 @@
 package com.siondream.rescue;
 
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
@@ -7,21 +8,25 @@ import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
 import com.badlogic.gdx.sionengine.entity.EntityWorld;
-import com.badlogic.gdx.sionengine.entity.components.GameGlobals;
 import com.badlogic.gdx.sionengine.entity.components.Physics;
 import com.badlogic.gdx.sionengine.entity.components.State;
 import com.badlogic.gdx.sionengine.entity.components.Type;
 import com.badlogic.gdx.sionengine.entity.systems.PhysicsSystem;
 import com.badlogic.gdx.sionengine.entity.systems.PhysicsSystem.CollisionHandler;
+import com.siondream.rescue.GameScreen.ScreenState;
 
 public class CollisionHandlingSystem extends EntitySystem {
 
-	public CollisionHandlingSystem(EntityWorld world, int priority, int loggingLevel) {
+	private RescueCopter m_game;
+	
+	public CollisionHandlingSystem(RescueCopter game, EntityWorld world, int priority, int loggingLevel) {
 		super(world, priority, loggingLevel);
 		
 		m_aspect.addToAll(Physics.class);
 		m_aspect.addToAll(State.class);
 		m_aspect.addToAll(Type.class);
+		
+		m_game = game;
 		
 		PhysicsSystem physics = world.getSystem(PhysicsSystem.class);
 		physics.addCollisionHandler(GameGlobals.type_spaceship,
@@ -48,26 +53,32 @@ public class CollisionHandlingSystem extends EntitySystem {
 	private class ShipLevelCollisionHandler implements CollisionHandler {
 
 		@Override
-		public void beginContact(Entity entityA, Entity entityB) {
+		public void beginContact(Contact contact, Entity entityA, Entity entityB) {
+			Entity entity = entityA != null? entityA : entityB;
+			SpaceShip ship = entity.getComponent(SpaceShip.class);
+			ship.reduceEnergy(SionEngine.getSettings().getFloat("g_spaceShipCollisionDamage", 10.0f));
+			m_logger.info("ship collision energy " + ship.getEnergy());
+			
+			if (ship.getEnergy() <= 0.0f) {
+				GameScreen gameScreen = (GameScreen)m_game.getScreen("GameScreen");
+				gameScreen.setState(ScreenState.Lose);
+			}
+		}
+
+		@Override
+		public void endContact(Contact contact, Entity entityA, Entity entityB) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void endContact(Entity entityA, Entity entityB) {
+		public void preSolve(Contact contact, Manifold manifold, Entity entityA, Entity entityB) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void preSolve(Entity entityA, Entity entityB, Manifold manifold) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void postSolve(Entity entityA, Entity entityB,
-				ContactImpulse contactImpulse) {
+		public void postSolve(Contact contact, ContactImpulse contactImpulse, Entity entityA, Entity entityB) {
 			// TODO Auto-generated method stub
 			
 		}

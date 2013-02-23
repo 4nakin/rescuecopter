@@ -23,6 +23,7 @@ import com.badlogic.gdx.sionengine.entity.components.Asset;
 import com.badlogic.gdx.sionengine.entity.components.Physics;
 import com.badlogic.gdx.sionengine.entity.components.State;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
+import com.badlogic.gdx.sionengine.entity.components.Type;
 import com.badlogic.gdx.sionengine.entity.managers.GroupManager;
 import com.badlogic.gdx.sionengine.entity.managers.TagManager;
 import com.badlogic.gdx.sionengine.maps.CircleMapObject;
@@ -32,6 +33,7 @@ import com.badlogic.gdx.sionengine.maps.MapObject;
 import com.badlogic.gdx.sionengine.maps.MapObjects;
 import com.badlogic.gdx.sionengine.maps.RectangleMapObject;
 import com.badlogic.gdx.sionengine.tweeners.CameraTweener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Logger;
 
 public class GameScreen implements Screen, InputProcessor {
@@ -44,6 +46,7 @@ public class GameScreen implements Screen, InputProcessor {
 		Win,
 	}
 	
+	private RescueCopter m_game;
 	private Logger m_logger = new Logger("GameScreen", Logger.INFO);  
 	private ScreenState m_state = ScreenState.Loading;
 	private Map m_map;
@@ -51,8 +54,57 @@ public class GameScreen implements Screen, InputProcessor {
 	private MapBodyManager m_mapBodyManager = new MapBodyManager();
 	private RectangleMapObject m_cameraBounds = null;
 	
-	public GameScreen(SionEngine engine) {
+	public GameScreen(RescueCopter game) {
+		m_game = game;
+	}
+	
+	public ScreenState getState() {
+		return m_state;
+	}
+	
+	public void setState(ScreenState state) {
+		m_state = state;
+	}
+	
+	private void resetGame() {
+		EntityWorld world = SionEngine.getEntityWorld();
+		TagManager tagManager = world.getManager(TagManager.class);
+		GroupManager groupManager = world.getManager(GroupManager.class);
 		
+		// Destroy space ship
+		Entity ship = tagManager.getEntity(GameGlobals.type_spaceship);
+		if (ship != null)
+			world.deleteEntity(ship);
+		
+		// Destroy astronauts
+		Array<Entity> astronauts = groupManager.getEntities(GameGlobals.group_astronauts);
+		
+		if (astronauts != null) { 
+			for (Entity astronaut : astronauts) {
+				world.deleteEntity(astronaut);
+			}
+			
+			astronauts.clear();
+		}
+		
+		// Reset timers
+		
+		// Reset game state
+		setState(ScreenState.Loading);
+		
+		// Create level geometry if it's not loaded already
+		if (m_map == null) {
+			m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
+			m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
+			m_mapBodyManager.createPhysics(m_map, "Physics");
+			m_cameraBounds = (RectangleMapObject)m_map.getLayers().getLayer("Camera").getObjects().getObject("bounds");
+		}
+		
+		// Create spaceship
+		createSpaceShip();
+		
+		// Create astronauts
+		createAstronauts();
 	}
 	
 	@Override
@@ -79,19 +131,32 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public void render(float delta) {
-		
-		
-		if (m_state == ScreenState.Loading && SionEngine.getAssetManager().update()) {
-			prepareLevel();
-			m_state = ScreenState.Playing;
+
+		if (m_state == ScreenState.Loading) {
+			if (SionEngine.getAssetManager().update()) {
+				resetGame();
+				m_state = ScreenState.Playing;
+			}
+			else {
+				return;
+			}
 		}
 		
 		if (m_mapRenderer != null) {
 			m_mapRenderer.begin();
 			m_mapRenderer.render(SionEngine.getCamera());
 			m_mapRenderer.end();
-			updateCamera();
 		}
+		
+		if (m_state == ScreenState.Lose) {
+			resetGame();
+		}
+		
+		if (m_state == ScreenState.Win) {
+			return;
+		}
+		
+		updateCamera();
 		
 		SionEngine.getEntityWorld().update();
 		SionEngine.getTweenManager().update(Gdx.graphics.getDeltaTime());
@@ -157,24 +222,19 @@ public class GameScreen implements Screen, InputProcessor {
 		return false;
 	}
 	
-	private void prepareLevel() {
-		m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
-		m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
-		m_mapBodyManager.createPhysics(m_map, "Physics");
-		createSpaceShip();
-		createAstronauts();
-		m_cameraBounds = (RectangleMapObject)m_map.getLayers().getLayer("Camera").getObjects().getObject("bounds");
-	}
-	
 	private void createSpaceShip() {
 		EntityWorld world = SionEngine.getEntityWorld();
 		Entity entity = world.createEntity();
+		
 		Transform transform = world.createComponent(Transform.class);
 		AnimatedSprite anim = world.createComponent(AnimatedSprite.class);
 		Physics physics = world.createComponent(Physics.class);
 		State state = world.createComponent(State.class);
 		Asset asset = world.createComponent(Asset.class);
+		Type type = world.createComponent(Type.class);
+		
 		anim.setFileName("data/spaceship.xml");
+		physics.setUserData(entity);
 		physics.setFileName("data/spaceship_physics.xml");
 		physics.setWakeUp(true);
 		state.set(Globals.state_idle);
@@ -183,14 +243,19 @@ public class GameScreen implements Screen, InputProcessor {
 		position.x = circle.getCircle().x * SionEngine.getUnitsPerPixel();
 		position.y = circle.getCircle().y * SionEngine.getUnitsPerPixel();
 		transform.setPosition(position);
+		type.set(GameGlobals.type_spaceship);
+		
 		entity.addComponent(transform);
 		entity.addComponent(anim);
 		entity.addComponent(state);
 		entity.addComponent(asset);
 		entity.addComponent(physics);
 		entity.addComponent(new SpaceShip());
+		
+		entity.addComponent(type);
 		world.addEntity(entity);
-		world.getManager(TagManager.class).register("spaceship", entity);
+		
+		world.getManager(TagManager.class).register(GameGlobals.type_spaceship, entity);
 		m_logger.info("Created caveman in " + position);
 	}
 	
@@ -209,7 +274,9 @@ public class GameScreen implements Screen, InputProcessor {
 			Physics physics = world.createComponent(Physics.class);
 			State state = world.createComponent(State.class);
 			Asset asset = world.createComponent(Asset.class);
+			Type type = world.createComponent(Type.class);
 			anim.setFileName("data/astronaut.xml");
+			physics.setUserData(entity);
 			physics.setFileName("data/astronaut_physics.xml");
 			physics.setWakeUp(true);
 			state.set(Globals.state_idle);
@@ -217,21 +284,23 @@ public class GameScreen implements Screen, InputProcessor {
 			position.x = circle.getCircle().x * SionEngine.getUnitsPerPixel();
 			position.y = circle.getCircle().y * SionEngine.getUnitsPerPixel();
 			transform.setPosition(position);
+			type.set(GameGlobals.type_astronaut);
 			entity.addComponent(transform);
 			entity.addComponent(anim);
 			entity.addComponent(state);
 			entity.addComponent(asset);
 			entity.addComponent(physics);
 			entity.addComponent(new Abductable());
+			entity.addComponent(type);
 			world.addEntity(entity);
-			groupManager.register("astronauts", entity);
+			groupManager.register(GameGlobals.group_astronauts, entity);
 			m_logger.info("Created astronaut in " + position);
 		}
 	}
 	
 	private void updateCamera() {
 		OrthographicCamera camera = SionEngine.getCamera();
-		Entity spaceShip = SionEngine.getEntityWorld().getManager(TagManager.class).getEntity("spaceship");
+		Entity spaceShip = SionEngine.getEntityWorld().getManager(TagManager.class).getEntity(GameGlobals.type_spaceship);
 		Vector3 position = spaceShip.getComponent(Transform.class).getPosition();
 		
 		Vector3 destPos = new Vector3();

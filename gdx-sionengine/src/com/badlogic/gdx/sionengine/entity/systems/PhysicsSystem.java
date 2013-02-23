@@ -25,10 +25,10 @@ import com.badlogic.gdx.utils.ObjectMap;
 public class PhysicsSystem extends EntitySystem implements ContactListener {
 
 	public interface CollisionHandler {
-		void beginContact(Entity entityA, Entity entityB);
-		void endContact(Entity entityA, Entity entityB);
-		void preSolve(Entity entityA, Entity entityB, Manifold manifold);
-		void postSolve(Entity entityA, Entity entityB, ContactImpulse contactImpulse);
+		void beginContact(Contact contact, Entity entityA, Entity entityB);
+		void endContact(Contact contact, Entity entityA, Entity entityB);
+		void preSolve(Contact contact, Manifold manifold, Entity entityA, Entity entityB);
+		void postSolve(Contact contact, ContactImpulse contactImpulse, Entity entityA, Entity entityB);
 	}	
 	
 	private World m_box2DWorld;
@@ -72,6 +72,7 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 	@Override
 	public void begin() {
 		m_box2DWorld.step(Gdx.graphics.getDeltaTime(), m_velocityIterations, m_positionIterations);
+		m_box2DWorld.clearForces();
 	}
 	
 	@Override
@@ -110,57 +111,45 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 
 	@Override
 	public void beginContact(Contact contact) {
-		Entity entityA = getEntity(contact, EntityIdx.A);
-		Entity entityB = getEntity(contact, EntityIdx.B);
+		CollisionHandler handler = getCollisionHandler(contact);
 		
-		if (entityA != null && entityB != null) {
-			CollisionHandler handler = getCollisionHandler(contact, entityA, entityB);
-			
-			if (handler != null) {
-				handler.beginContact(entityA, entityB);
-			}
+		if (handler != null) {
+			Entity entityA = getEntity(contact, EntityIdx.A);
+			Entity entityB = getEntity(contact, EntityIdx.B);
+			handler.beginContact(contact, entityA, entityB);
 		}
 	}
 
 	@Override
 	public void endContact(Contact contact) {
-		Entity entityA = getEntity(contact, EntityIdx.A);
-		Entity entityB = getEntity(contact, EntityIdx.B);
+		CollisionHandler handler = getCollisionHandler(contact);
 		
-		if (entityA != null && entityB != null) {
-			CollisionHandler handler = getCollisionHandler(contact, entityA, entityB);
-			
-			if (handler != null) {
-				handler.endContact(entityA, entityB);
-			}
+		if (handler != null) {
+			Entity entityA = getEntity(contact, EntityIdx.A);
+			Entity entityB = getEntity(contact, EntityIdx.B);
+			handler.endContact(contact, entityA, entityB);
 		}
 	}
 
 	@Override
 	public void postSolve(Contact contact, ContactImpulse contactImpulse) {
-		Entity entityA = getEntity(contact, EntityIdx.A);
-		Entity entityB = getEntity(contact, EntityIdx.B);
+		CollisionHandler handler = getCollisionHandler(contact);
 		
-		if (entityA != null && entityB != null) {
-			CollisionHandler handler = getCollisionHandler(contact, entityA, entityB);
-			
-			if (handler != null) {
-				handler.postSolve(entityA, entityB, contactImpulse);
-			}
+		if (handler != null) {
+			Entity entityA = getEntity(contact, EntityIdx.A);
+			Entity entityB = getEntity(contact, EntityIdx.B);
+			handler.postSolve(contact, contactImpulse, entityA, entityB);
 		}
 	}
 
 	@Override
 	public void preSolve(Contact contact, Manifold manifold) {
-		Entity entityA = getEntity(contact, EntityIdx.A);
-		Entity entityB = getEntity(contact, EntityIdx.B);
+		CollisionHandler handler = getCollisionHandler(contact);
 		
-		if (entityA != null && entityB != null) {
-			CollisionHandler handler = getCollisionHandler(contact, entityA, entityB);
-			
-			if (handler != null) {
-				handler.preSolve(entityA, entityB, manifold);
-			}
+		if (handler != null) {
+			Entity entityA = getEntity(contact, EntityIdx.A);
+			Entity entityB = getEntity(contact, EntityIdx.B);
+			handler.preSolve(contact, manifold, entityA, entityB);
 		}
 	}
 	
@@ -169,31 +158,32 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 		return "PhysicsSystem";
 	}
 	
-	private CollisionHandler getCollisionHandler(Contact contact, Entity entityA, Entity entityB) {
+	private CollisionHandler getCollisionHandler(Contact contact) {
+		int typeA = 0;
+		int typeB = 0;
 		Object dataA = contact.getFixtureA().getBody().getUserData();
 		Object dataB = contact.getFixtureB().getBody().getUserData();
 		
-		if (!(dataA instanceof Entity) || !(dataB instanceof Entity)) {
-			return null;
+		if (dataA instanceof Entity) {
+			Entity entityA = (Entity)dataA;
+			Type typeAComponent = (Type)entityA.getComponent(Type.class);
+			typeA = (typeAComponent != null)? typeAComponent.get() : 0;
 		}
 		
-		entityA = (Entity)dataA;
-		entityB = (Entity)dataB;
-		
-		Type typeA = (Type)entityA.getComponent(Type.class);
-		Type typeB = (Type)entityB.getComponent(Type.class);
-		
-		if (typeA == null || typeB == null) {
-			return null;
+		if (dataB instanceof Entity) {
+			Entity entityB = (Entity)dataB;
+			Type typeBComponent = (Type)entityB.getComponent(Type.class);
+			typeB = (typeBComponent != null)? typeBComponent.get() : 0;
 		}
 		
-		ObjectMap<Integer, CollisionHandler> collection = m_handlers.get(typeA.get());
+		
+		ObjectMap<Integer, CollisionHandler> collection = m_handlers.get(typeA);
 		
 		if (collection == null) {
 			return null;
 		}
 		
-		return collection.get(typeB.get());
+		return collection.get(typeB);
 	}
 	
 	private void addCollisionHandlerAux(Integer typeA, Integer typeB, CollisionHandler handler) {

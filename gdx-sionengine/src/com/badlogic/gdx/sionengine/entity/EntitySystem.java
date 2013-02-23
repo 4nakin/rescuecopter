@@ -52,8 +52,8 @@ public abstract class EntitySystem implements EntityObserver {
 	
 	@Override
 	final public void entityDeleted(Entity e) {
-		if (m_entities.removeValue(e, true)) {
-			m_logger.info("adding entity " + e + " to " + this);
+		if (m_entities.removeValue(e, false)) {
+			m_logger.info("removing entity " + e + " from " + this);
 		}
 	}
 	

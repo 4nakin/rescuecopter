@@ -42,7 +42,7 @@ public class AbductionSystem extends EntitySystem {
 
 	@Override
 	public void begin() {
-		Entity spaceShip = m_world.getManager(TagManager.class).getEntity("spaceship");
+		Entity spaceShip = m_world.getManager(TagManager.class).getEntity(GameGlobals.type_spaceship);
 		
 		if (spaceShip != null) {
 			m_spaceShipPos = spaceShip.getComponent(Transform.class).getPosition();

@@ -49,5 +49,9 @@ public class PlayerController extends EntitySystem {
 		velocity.x = Math.min(velocity.x, 5.0f);
 		velocity.y = Math.min(velocity.y, 5.0f);
 	}
-
+	
+	@Override
+	public String toString() {
+		return "PlayerController";
+	}
 }
