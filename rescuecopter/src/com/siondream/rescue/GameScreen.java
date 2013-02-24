@@ -14,6 +14,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.sionengine.Chronometer;
+import com.badlogic.gdx.sionengine.Chronometer.Format;
+import com.badlogic.gdx.sionengine.Chronometer.Time;
 import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
@@ -39,6 +46,7 @@ import com.badlogic.gdx.utils.Logger;
 public class GameScreen implements Screen, InputProcessor {
 	
 	public enum ScreenState {
+		Init,
 		Loading,
 		Start,
 		Playing,
@@ -53,9 +61,42 @@ public class GameScreen implements Screen, InputProcessor {
 	private GleedMapRenderer m_mapRenderer;
 	private MapBodyManager m_mapBodyManager = new MapBodyManager();
 	private RectangleMapObject m_cameraBounds = null;
+	private Chronometer m_chrono = new Chronometer();
+	private Time m_time = new Time(0, 0, 0, 0);
+	
+	// UI
+	private Stage m_stage = new Stage();
+	Table m_table = new Table();
+	private OrthographicCamera m_HUDCamera = new OrthographicCamera(SionEngine.getVirtualWidth(), SionEngine.getVirtualWidth());
+	private Label m_lblTime;
+	private Label m_lblAstronauts;
+	private Label m_lblEnergy;
 	
 	public GameScreen(RescueCopter game) {
 		m_game = game;
+		
+		m_stage.setCamera(m_HUDCamera);
+		Skin skin = m_game.getSkin();
+		m_table.setFillParent(true);
+		m_stage.addActor(m_table);
+		m_lblTime = new Label("", skin);
+		m_lblTime.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		m_lblTime.setWidth(70.0f);
+		m_lblTime.setX(SionEngine.getVirtualWidth() - m_lblTime.getWidth());
+		m_lblTime.setY(700.0f);
+		m_stage.addActor(m_lblTime);
+		m_lblAstronauts = new Label("", skin);
+		m_lblAstronauts.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		m_lblAstronauts.setWidth(70.0f);
+		m_lblAstronauts.setX(20.0f);
+		m_lblAstronauts.setY(700.0f);
+		m_stage.addActor(m_lblAstronauts);
+		m_lblEnergy = new Label("", skin);
+		m_lblEnergy.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		m_lblEnergy.setWidth(100.0f);
+		m_lblEnergy.setX((SionEngine.getVirtualWidth() - m_lblEnergy.getWidth()) / 2.0f);
+		m_lblEnergy.setY(700.0f);
+		m_stage.addActor(m_lblEnergy);
 	}
 	
 	public ScreenState getState() {
@@ -65,6 +106,7 @@ public class GameScreen implements Screen, InputProcessor {
 	public void setState(ScreenState state) {
 		m_state = state;
 	}
+	
 	
 	private void resetGame() {
 		EntityWorld world = SionEngine.getEntityWorld();
@@ -77,7 +119,8 @@ public class GameScreen implements Screen, InputProcessor {
 			world.deleteEntity(ship);
 		
 		// Destroy astronauts
-		Array<Entity> astronauts = groupManager.getEntities(GameGlobals.group_astronauts);
+		Array<Entity> astronauts = new Array<Entity>();
+		groupManager.getEntities(GameGlobals.group_astronauts, astronauts);
 		
 		if (astronauts != null) { 
 			for (Entity astronaut : astronauts) {
@@ -91,14 +134,6 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		// Reset game state
 		setState(ScreenState.Loading);
-		
-		// Create level geometry if it's not loaded already
-		if (m_map == null) {
-			m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
-			m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
-			m_mapBodyManager.createPhysics(m_map, "Physics");
-			m_cameraBounds = (RectangleMapObject)m_map.getLayers().getLayer("Camera").getObjects().getObject("bounds");
-		}
 		
 		// Create spaceship
 		createSpaceShip();
@@ -132,10 +167,27 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public void render(float delta) {
 
+		if (m_state == ScreenState.Init){
+			if (SionEngine.getAssetManager().update()) {
+				
+				if (m_map == null) {
+					m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
+					m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
+					m_mapBodyManager.createPhysics(m_map, "Physics");
+					m_cameraBounds = (RectangleMapObject)m_map.getLayers().getLayer("Camera").getObjects().getObject("bounds");
+				}
+				
+				resetGame();
+				setState(ScreenState.Loading);
+			}
+			
+			return;
+		}
+		
 		if (m_state == ScreenState.Loading) {
 			if (SionEngine.getAssetManager().update()) {
-				resetGame();
 				m_state = ScreenState.Playing;
+				m_chrono.start();
 			}
 			else {
 				return;
@@ -160,12 +212,36 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		SionEngine.getEntityWorld().update();
 		SionEngine.getTweenManager().update(Gdx.graphics.getDeltaTime());
+		
+		
+		updateHUD();
+		
 	}
 
+	private void updateHUD() {
+		m_HUDCamera.update();
+		
+		// Update info
+		EntityWorld world = SionEngine.getEntityWorld();
+		
+		m_chrono.getTime(m_time, Format.Minutes);
+		m_lblTime.setText("" + m_time.getMinutes() + " : " + m_time.getSeconds());
+		
+		Array<Entity> astronauts = world.getManager(GroupManager.class).getEntities(GameGlobals.group_astronauts);
+		m_lblAstronauts.setText((astronauts != null)? "" + astronauts.size : "0");
+		
+		Entity shipEntity = world.getManager(TagManager.class).getEntity(GameGlobals.type_spaceship);
+		SpaceShip ship = shipEntity.getComponent(SpaceShip.class);
+		m_lblEnergy.setText("Energy: " + ship.getEnergy() / ship.getTotalEnergy() * 100.0f + "%");
+		
+		// Draw
+		m_stage.act();
+		m_stage.draw();
+	}
+	
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
+		m_stage.setViewport(width, height, true);
 	}
 
 	@Override
@@ -179,7 +255,7 @@ public class GameScreen implements Screen, InputProcessor {
 		Gdx.input.setInputProcessor(this);
 		
 		SionEngine.getAssetManager().load("data/level.xml", Map.class);
-		m_state = ScreenState.Loading;
+		setState(ScreenState.Init);
 	}
 
 	public boolean keyDown(int keycode) {

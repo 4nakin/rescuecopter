@@ -1,7 +1,9 @@
 package com.siondream.rescue;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.SionEngine;
@@ -15,8 +17,10 @@ import com.badlogic.gdx.sionengine.entity.components.Transform;
 
 public class PlayerController extends EntitySystem {
 
+	private Vector3 m_touchPos = new Vector3();
 	private float m_recoveryTime = SionEngine.getSettings().getFloat("g_recoveryTime", 1.5f);
 	private float m_recoveryTimer = m_recoveryTime;
+	private float m_maxSpeed = SionEngine.getSettings().getFloat("g_maxShipSpeed", 10.0f);
 	
 	public PlayerController(EntityWorld world, int priority, int loggingLevel) {
 		super(world, priority, loggingLevel);
@@ -40,21 +44,31 @@ public class PlayerController extends EntitySystem {
 		Body body = physics.getBody();
 		
 		if (Gdx.input.isTouched()) {
-			if (Gdx.input.getX() > SionEngine.getVirtualWidth() * 0.85f) {
+			Vector3 shipPos = e.getComponent(Transform.class).getPosition();
+			m_touchPos.x = Gdx.input.getX();
+			m_touchPos.y = Gdx.input.getY();
+			OrthographicCamera camera = SionEngine.getCamera();
+			camera.unproject(m_touchPos);
+			
+			if (m_touchPos.x > shipPos.x) {
 				body.applyForceToCenter(55.0f, 0.0f);
 			}
-			else if (Gdx.input.getX() < SionEngine.getVirtualWidth() * 0.15f) {
+			else if (m_touchPos.x < shipPos.x) {
 				body.applyForceToCenter(-55.0f, 0.0f);
 			}
 			
-			if (Gdx.input.getY() < SionEngine.getVirtualHeight() * 0.15f) {
+			if (m_touchPos.y > shipPos.y) {
 				body.applyForceToCenter(0.0f, 100.0f);
 			}
 		}
 		
 		Vector2 velocity = body.getLinearVelocity();
-		velocity.x = Math.min(velocity.x, 5.0f);
-		velocity.y = Math.min(velocity.y, 5.0f);
+		
+		if (velocity.len2() > m_maxSpeed * m_maxSpeed) {
+			velocity.nor();
+			velocity.mul(m_maxSpeed);
+			body.setLinearVelocity(velocity);
+		}
 		
 		// Ship state
 		State state = e.getComponent(State.class);

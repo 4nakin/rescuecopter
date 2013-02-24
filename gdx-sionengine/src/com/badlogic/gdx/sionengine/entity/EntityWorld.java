@@ -1,6 +1,7 @@
 package com.badlogic.gdx.sionengine.entity;
 
 import java.util.Comparator;
+import java.util.Iterator;
 
 import com.badlogic.gdx.sionengine.entity.managers.GroupManager;
 import com.badlogic.gdx.sionengine.entity.managers.TagManager;
@@ -8,6 +9,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectMap.Entries;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.Pool;
 
 @SuppressWarnings("rawtypes")
@@ -75,6 +78,14 @@ public class EntityWorld {
 		
 		for (EntitySystem system : m_orderedSystems) {
 			system.entityDeleted(e);
+		}
+		
+		Entries<Class<? extends EntityManager>, EntityManager> entries = m_managers.entries();
+		Iterator<Entry<Class<? extends EntityManager>, EntityManager>> it = entries.iterator();
+		
+		while (it.hasNext()) {
+			Entry<Class<? extends EntityManager>, EntityManager> manager = it.next();
+			manager.value.entityDeleted(e);
 		}
 		
 		m_entityPool.free(e);

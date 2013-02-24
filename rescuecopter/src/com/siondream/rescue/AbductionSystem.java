@@ -25,10 +25,10 @@ public class AbductionSystem extends EntitySystem {
 	private Vector3 m_down = new Vector3();
 	private Vector2 m_force = new Vector2();
 	private float m_abductionRadius = SionEngine.getSettings().getFloat("g_abductionRadius", 10.0f);
-	private float m_abductionCloseRadius = SionEngine.getSettings().getFloat("g_abductionClose", 3.0f);
+	private float m_abductionCloseRadius = SionEngine.getSettings().getFloat("g_abductionClose", 3.5f);
 	private float m_abductionForce = SionEngine.getSettings().getFloat("g_abductionForce", 150.0f);
 	private float m_abductionAngle = MathUtils.cos(MathUtils.degRad * SionEngine.getSettings().getFloat("g_abductionAngle", 90.0f) * 0.5f);
-	
+	private float m_maxAstronautSpeed = SionEngine.getSettings().getFloat("g_maxAstronautSpeed", 2.0f);
 	
 	public AbductionSystem(EntityWorld world, int priority, int loggingLevel) {
 		super(world, priority, loggingLevel);
@@ -63,6 +63,7 @@ public class AbductionSystem extends EntitySystem {
 		m_astronautPos.x = position.x;
 		m_astronautPos.y = position.y;
 		
+		// Abduction force
 		if (canAbduct()) {
 			abductable.abduct(Gdx.graphics.getDeltaTime());
 			
@@ -84,10 +85,20 @@ public class AbductionSystem extends EntitySystem {
 			abductable.ceaseAbduction();
 		}
 		
+		// Abduction color
 		AnimatedSprite sprite = e.getComponent(AnimatedSprite.class);
 		Color tint = sprite.getColor();
 		tint.a = Math.max(abductable.getAbductionTimer(), 0.0f) / Abductable.getAbductionTime();
 		sprite.setColor(tint);
+		
+		// Clamp max speed
+		Vector2 velocity = body.getLinearVelocity();
+		
+		if (velocity.len2() > m_maxAstronautSpeed * m_maxAstronautSpeed) {
+			velocity.nor();
+			velocity.mul(m_maxAstronautSpeed);
+			body.setLinearVelocity(velocity);
+		}
 	}
 	
 	@Override

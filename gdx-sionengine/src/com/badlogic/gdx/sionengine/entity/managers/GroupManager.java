@@ -21,6 +21,20 @@ public class GroupManager extends EntityManager {
 		return m_groups.get(group);
 	}
 	
+	public void getEntities(String group, Array<Entity> fill) {
+		getEntities(SionEngine.getIDGenerator().getID(group), fill);
+	}
+	
+	public void getEntities(int group, Array<Entity> fill) {
+		Array<Entity> entities = getEntities(group);
+		
+		if (entities != null) {
+			for (Entity entity : entities) {
+				fill.add(entity);
+			}
+		}
+	}
+	
 	public void register(String group, Entity e) {
 		register(SionEngine.getIDGenerator().getID(group), e);
 	}
