@@ -50,7 +50,7 @@ import com.badlogic.gdx.utils.XmlWriter;
  * @endcode
  */
 public class Settings {
-	private final Logger m_logger = new Logger("Settings", Logger.INFO);
+	private final Logger m_logger = new Logger("Settings", Logger.ERROR);
 	
 	private String m_settingsFile;
 	
@@ -95,6 +95,7 @@ public class Settings {
 			return string;
 		}
 		
+		m_logger.error(key + " not found, returning default " + defaultValue);
 		return defaultValue;
 	}
 	
@@ -118,6 +119,7 @@ public class Settings {
 			return f;
 		}
 		
+		m_logger.error(key + " not found, returning default " + defaultValue);
 		return defaultValue;
 	}
 	
@@ -141,6 +143,7 @@ public class Settings {
 			return i;
 		}
 		
+		m_logger.error(key + " not found, returning default " + defaultValue);
 		return defaultValue;
 	}
 	
@@ -164,6 +167,7 @@ public class Settings {
 			return b;
 		}
 		
+		m_logger.error(key + " not found, returning default " + defaultValue);
 		return defaultValue;
 	}
 	
@@ -187,6 +191,7 @@ public class Settings {
 			return new Vector3(v);
 		}
 		
+		m_logger.error(key + " not found, returning default " + defaultValue);
 		return defaultValue;
 	}
 	

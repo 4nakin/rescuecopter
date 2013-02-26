@@ -1,6 +1,7 @@
 package com.badlogic.gdx.sionengine.entity.systems;
 
 import com.badlogic.gdx.sionengine.Globals;
+import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
 import com.badlogic.gdx.sionengine.entity.EntityWorld;
@@ -11,9 +12,10 @@ public class DisposingSystem extends EntitySystem {
 
 	private Array<Entity> m_pendingErase = new Array<Entity>();
 	
-	public DisposingSystem(EntityWorld world, int priority, int loggingLevel) {
-		super(world, priority, loggingLevel);
-		
+	public DisposingSystem(EntityWorld world, int priority) {
+		super(world, priority);
+		m_logger.setLevel(SionEngine.getSettings().getInt("disposing.log", 1));
+		m_logger.info("initializing");
 		m_aspect.addToAll(State.class);
 	}
 

@@ -40,26 +40,29 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 	
 	public PhysicsSystem(EntityWorld world,
 						 int priority,
-						 int loggingLevel,
 						 World box2DWorld,
 						 OrthographicCamera camera) {
 		
-		super(world, priority, loggingLevel);
+		super(world, priority);
+		
+		Settings settings = SionEngine.getSettings();
+		
+		m_logger.setLevel(settings.getInt("physics.log", 1));
 		m_logger.info("initializing");
+		
 		m_aspect.addToAll(Physics.class);
 		m_box2DWorld = box2DWorld;
 		m_camera = camera;
 		m_handlers = new ObjectMap<Integer, ObjectMap<Integer, CollisionHandler>>();
 		
-		Settings settings = SionEngine.getSettings();
-		m_box2DRenderer = new Box2DDebugRenderer(settings.getBoolean("drawBodies", true),
-											     settings.getBoolean("drawJoints", true),
-												 settings.getBoolean("drawAABBs", true),
-												 settings.getBoolean("drawInactiveBodies", true),
-												 settings.getBoolean("drawVelocities", true));
+		m_box2DRenderer = new Box2DDebugRenderer(settings.getBoolean("physics.drawBodies", true),
+											     settings.getBoolean("physics.drawJoints", true),
+												 settings.getBoolean("physics.drawAABBs", true),
+												 settings.getBoolean("physics.drawInactiveBodies", true),
+												 settings.getBoolean("physics.drawVelocities", true));
 		
-		m_velocityIterations = settings.getInt("velocityIterations", 6);
-		m_positionIterations = settings.getInt("positionIterations", 2);
+		m_velocityIterations = settings.getInt("physics.velocityIterations", 6);
+		m_positionIterations = settings.getInt("physics.positionIterations", 2);
 		
 		m_box2DWorld.setContactListener(this);
 	}

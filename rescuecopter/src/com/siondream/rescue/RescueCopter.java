@@ -2,7 +2,6 @@ package com.siondream.rescue;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.sionengine.Settings;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.EntityWorld;
 import com.badlogic.gdx.sionengine.entity.components.AnimatedSprite;
@@ -32,6 +31,7 @@ public class RescueCopter extends SionEngine {
 		super.create();
 		
 		EntityWorld world = getEntityWorld();
+		
 		world.setComponentPool(Transform.class, new TransformPool());
 		world.setComponentPool(Physics.class, new PhysicsPool());
 		world.setComponentPool(AnimatedSprite.class, new AnimatedSpritePool());
@@ -39,40 +39,13 @@ public class RescueCopter extends SionEngine {
 		world.setComponentPool(Asset.class, new AssetPool());
 		world.setComponentPool(Type.class, new TypePool());
 		
-		Settings settings = getSettings();
-		
-		world.addSystem(new AssetSystem(world,
-										1,
-										settings.getInt("assetSystemLoggingLevel", Logger.INFO)));
-		
-		world.addSystem(new RenderingSystem(world,
-											2,
-											settings.getInt("renderingSystemLoggingLevel", Logger.INFO),
-											SionEngine.getBatch(),
-											SionEngine.getCamera()));
-		
-		world.addSystem(new PlayerController(world,
-											 3,
-											 Logger.INFO));
-		
-		world.addSystem(new AbductionSystem(world,
-										    4,
-											Logger.INFO));
-		
-		world.addSystem(new PhysicsSystem(world,
-										  5,
-										  settings.getInt("physicsSystemLoggingLevel", Logger.INFO),
-										  SionEngine.getWorld(),
-										  SionEngine.getCamera()));
-		
-		world.addSystem(new CollisionHandlingSystem(this,
-						world,
-						6,
-						settings.getInt("collisionHandlingSystemLoggingLevel", Logger.INFO)));
-		
-		world.addSystem(new DisposingSystem(world,
-										  	7,
-										  	settings.getInt("disposingSystemLoggingLevel", Logger.INFO)));
+		world.addSystem(new AssetSystem(world, 1));
+		world.addSystem(new RenderingSystem(world, 2, SionEngine.getBatch(), SionEngine.getCamera()));
+		world.addSystem(new PlayerController(world,3));
+		world.addSystem(new AbductionSystem(world, 4));
+		world.addSystem(new PhysicsSystem(world, 5, SionEngine.getWorld(), SionEngine.getCamera()));
+		world.addSystem(new CollisionHandlingSystem(this, world, 6));
+		world.addSystem(new DisposingSystem(world, 7));
 		
 		world.prepare();
 		

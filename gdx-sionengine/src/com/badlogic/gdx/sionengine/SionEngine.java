@@ -61,7 +61,7 @@ public class SionEngine extends Game {
 	public void create() {
 		m_settings = new Settings();
 		
-		m_logger = new Logger("SionEngine", m_settings.getInt("engineLoggingLevel", Logger.INFO));
+		m_logger = new Logger("SionEngine", m_settings.getInt("core.log", Logger.INFO));
 		
 		m_IDGenerator = new IDGenerator();
 		
@@ -79,21 +79,21 @@ public class SionEngine extends Game {
 		
 		m_screens = new ObjectMap<String, Screen>();
 		
-		m_virtualWidth = m_settings.getInt("virtualWidth", 1280);
-		m_virtualHeight = m_settings.getInt("virtualHeight", 720);
+		m_virtualWidth = m_settings.getInt("core.virtualWidth", 1280);
+		m_virtualHeight = m_settings.getInt("core.virtualHeight", 720);
 		m_aspectRatio = (float)m_virtualWidth/(float)m_virtualHeight;
 		
-		m_pixelsPerUnit = m_settings.getFloat("pixelsPerUnit", 1.0f);
+		m_pixelsPerUnit = m_settings.getFloat("core.pixelsPerUnit", 1.0f);
 		m_unitsPerPixel = 1.0f / m_pixelsPerUnit;
 		
-		if (m_settings.getBoolean("enableBox2D", true)) {
-			final Vector3 gravity = m_settings.getVector("gravity", Vector3.Zero);
-			m_world = new World(new Vector2(gravity.x, gravity.y), m_settings.getBoolean("doSleep", true));
+		if (m_settings.getBoolean("physics.enable", true)) {
+			final Vector3 gravity = m_settings.getVector("physics.gravity", Vector3.Zero);
+			m_world = new World(new Vector2(gravity.x, gravity.y), m_settings.getBoolean("physics.doSleep", true));
 		}
 		
-		m_entityWorld = new EntityWorld(m_settings.getInt("entityPoolSize", 100),
-										m_settings.getInt("maxCoponents", 10),
-										m_settings.getInt("entityWorldLoggingLevel", Logger.INFO));
+		m_entityWorld = new EntityWorld(m_settings.getInt("entity.poolSize", 100),
+										m_settings.getInt("entity.maxComponents", 10),
+										m_settings.getInt("entity.log", Logger.INFO));
 		
 		m_batch = new SpriteBatch();
 		m_camera = new OrthographicCamera(m_virtualWidth, m_virtualHeight);
@@ -101,8 +101,8 @@ public class SionEngine extends Game {
 		
 		m_shapeRenderer = new ShapeRenderer();
 		
-		Gdx.graphics.setTitle(m_settings.getString("windowTitle", "SionEngine"));
-		Gdx.graphics.setDisplayMode(m_virtualWidth, m_virtualHeight, m_settings.getBoolean("fullScreen", false));
+		Gdx.graphics.setTitle(m_settings.getString("core.windowTitle", "SionEngine"));
+		Gdx.graphics.setDisplayMode(m_virtualWidth, m_virtualHeight, m_settings.getBoolean("core.fullScreen", false));
 	}
 	
 	@Override
@@ -116,7 +116,7 @@ public class SionEngine extends Game {
 	@Override
 	public void render () {
 		
-		Gdx.gl.glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+		Gdx.gl.glClearColor(0.73f, 1.0f, 0.41f, 1.0f);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glEnable(GL10.GL_BLEND);
 		

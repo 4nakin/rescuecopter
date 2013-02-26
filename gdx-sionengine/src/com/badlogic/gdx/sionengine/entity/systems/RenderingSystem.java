@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.sionengine.Settings;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
@@ -26,18 +27,21 @@ public class RenderingSystem extends EntitySystem {
 	
 	public RenderingSystem(EntityWorld world,
 						   int priority,
-						   int loggingLevel,
 						   SpriteBatch batch,
 						   OrthographicCamera camera) {
 		
-		super(world, priority, loggingLevel);
+		super(world, priority);
+		
+		Settings settings = SionEngine.getSettings();
+		
+		m_logger.setLevel(settings.getInt("rendering.log", 1));
 		m_logger.info("initializing");
 		m_aspect.addToAll(Transform.class);
 		m_aspect.addToAll(AnimatedSprite.class);
 		m_aspect.addToAll(State.class);
 		m_batch = batch;
 		m_camera = camera;
-		m_sorted = new Array<Entity>(SionEngine.getSettings().getInt("renderingQueueSize", 500));
+		m_sorted = new Array<Entity>(settings.getInt("rendering.queueSize", 500));
 	}
 
 	@Override

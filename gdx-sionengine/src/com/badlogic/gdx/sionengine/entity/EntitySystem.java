@@ -12,12 +12,12 @@ public abstract class EntitySystem implements EntityObserver {
 	
 	private int m_priority;
 	
-	public EntitySystem(EntityWorld world, int priority, int loggingLevel) {
+	public EntitySystem(EntityWorld world, int priority) {
 		m_world = world;
 		m_entities = new Array<Entity>(m_world.getMaxEntities());
 		m_priority = priority;
 		m_aspect = new Aspect();
-		m_logger = new Logger(toString(), loggingLevel);
+		m_logger = new Logger(toString(), Logger.INFO);
 	}
 	
 	final int getPriority() {

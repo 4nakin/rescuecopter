@@ -10,7 +10,7 @@ public class SpaceShip extends Component {
 	
 	public SpaceShip() {
 		super();
-		m_totalEnergy = SionEngine.getSettings().getFloat("g_spaceshipEnergy", 20.0f);
+		m_totalEnergy = SionEngine.getSettings().getFloat("spaceship.energy", 20.0f);
 		reset();
 	}
 	

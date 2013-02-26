@@ -1,28 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
-	<!-- Screen size  -->
-	<int key="virtualWidth" value="1280" />
-	<int key="virtualHeight" value="720" />
-	<float key="pixelsPerUnit" value="30.0" />
-	<bool key="fullScreen" value="false" />
+	<!-- Core settings  -->
+	<int 	key="core.virtualWidth" 			value="1280" />
+	<int 	key="core.virtualHeight" 			value="720" />
+	<float 	key="core.pixelsPerUnit" 			value="30.0" />
+	<bool 	key="core.fullScreen" 				value="false" />
+	<string	key="core.windowTitle" 				value="Astronaut Abduction" />
+	
+	<!-- EntityWorld -->
+	<int 	key="entity.log"		 			value="1" />
+	<int 	key="entity.poolSize" 				value="100" />
+	<int 	key="entity.maxComponents" 			value="10" />
 	
 	<!--  AssetSystem -->
-	<int key="assetSystemLoggingLevel" value="1" />
+	<int 	key="assets.log" 					value="1" />
+	
+	<!--  DisposingSystem -->
+	<int 	key="disposing.log" 				value="1" />
 	
 	<!--  Physics -->
-	<bool key="enableBox2D" value="true" />
-	<int key="physicsSystemLoggingLevel" value="1" />
-	<vector key="gravity" x="0.0" y="-9.8" z="0.0" />
-	<bool key="doSleep" value="true" />
-	<int key="velocityIterations" value="12" />
-	<int key="positionIterations" value="6" />
-	<bool key="drawBodies" value="true" />
-	<bool key="drawJoints" value="true" />
-	<bool key="drawAABBs" value="true" />
-	<bool key="drawInactiveBodies" value="true" />
-	<bool key="drawVelocities" value="true" />
+	<bool 	key="physics.enable" 				value="true" />
+	<int 	key="physics.log" 					value="1" />
+	<vector key="physics.gravity" 				x="0.0" y="-9.8" z="0.0" />
+	<bool 	key="physics.doSleep" 				value="true" />
+	<int 	key="physics.velocityIterations" 	value="12" />
+	<int 	key="physics.positionIterations" 	value="6" />
+	<bool 	key="physics.drawBodies" 			value="true" />
+	<bool 	key="physics.drawJoints" 			value="true" />
+	<bool 	key="physics.drawAABBs" 			value="true" />
+	<bool 	key="physics.drawInactiveBodies" 	value="true" />
+	<bool 	key="physics.drawVelocities" 		value="true" />
 	
 	<!--  Rendering -->
-	<int key="renderingQueueSize" value="500" />
-	<int key="renderingSystemLoggingLevel" value="1" />
+	<int 	key="rendering.log" 				value="1" />
+	<int 	key="rendering.queueSize" 			value="500" />
+	
+	<!-- Abduction -->
+	<int 	key="abduction.log" 				value="1" />
+	<float 	key="abduction.radius" 				value="10.0" />
+	<float 	key="abduction.close" 				value="3.5" />
+	<float 	key="abduction.force" 				value="150.0" />
+	<float 	key="abduction.angle" 				value="90.0" />
+	<float 	key="abduction.maxSpeed" 			value="2.0" />
+	
+	<!-- Collision handling -->
+	<int 	key="collisions.log" 				value="1" />
+	<float 	key="collisions.shipDamage" 		value="10.0" />
+	
+	<!-- PlayerController -->
+	<int 	key="playerController.log" 			value="1" />
+	<float 	key="playerController.recoveryTime"	value="1.5" />
+	<float 	key="playerController.maxSpeed"		value="10.0" />
+	
+	<!-- Spaceship -->
+	<float 	key="spaceship.energy"				value="20.0" />
 </settings>

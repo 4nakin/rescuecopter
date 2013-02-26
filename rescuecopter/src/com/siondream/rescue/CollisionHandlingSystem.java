@@ -20,8 +20,11 @@ public class CollisionHandlingSystem extends EntitySystem {
 
 	private RescueCopter m_game;
 	
-	public CollisionHandlingSystem(RescueCopter game, EntityWorld world, int priority, int loggingLevel) {
-		super(world, priority, loggingLevel);
+	public CollisionHandlingSystem(RescueCopter game, EntityWorld world, int priority) {
+		super(world, priority);
+		
+		m_logger.setLevel(SionEngine.getSettings().getInt("collisions.log", 1));
+		m_logger.info("initializing");
 		
 		m_aspect.addToAll(Physics.class);
 		m_aspect.addToAll(State.class);
@@ -62,7 +65,7 @@ public class CollisionHandlingSystem extends EntitySystem {
 			
 			if (state.get() != GameGlobals.state_hit) {
 				SpaceShip ship = entity.getComponent(SpaceShip.class);
-				ship.reduceEnergy(SionEngine.getSettings().getFloat("g_spaceShipCollisionDamage", 10.0f));
+				ship.reduceEnergy(SionEngine.getSettings().getFloat("collisions.shipDamage", 10.0f));
 				state.set(GameGlobals.state_hit);
 				m_logger.info("ship collision energy " + ship.getEnergy());
 				

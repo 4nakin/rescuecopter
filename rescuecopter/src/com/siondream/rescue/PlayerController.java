@@ -18,12 +18,15 @@ import com.badlogic.gdx.sionengine.entity.components.Transform;
 public class PlayerController extends EntitySystem {
 
 	private Vector3 m_touchPos = new Vector3();
-	private float m_recoveryTime = SionEngine.getSettings().getFloat("g_recoveryTime", 1.5f);
+	private float m_recoveryTime = SionEngine.getSettings().getFloat("playerController.recoveryTime", 1.5f);
 	private float m_recoveryTimer = m_recoveryTime;
-	private float m_maxSpeed = SionEngine.getSettings().getFloat("g_maxShipSpeed", 10.0f);
+	private float m_maxSpeed = SionEngine.getSettings().getFloat("playerController.maxSpeed", 10.0f);
 	
-	public PlayerController(EntityWorld world, int priority, int loggingLevel) {
-		super(world, priority, loggingLevel);
+	public PlayerController(EntityWorld world, int priority) {
+		super(world, priority);
+		
+		m_logger.setLevel(SionEngine.getSettings().getInt("playerController.log", 1));
+		m_logger.info("initializing");
 		
 		m_aspect.addToAll(Transform.class);
 		m_aspect.addToAll(AnimatedSprite.class);

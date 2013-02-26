@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.sionengine.Globals;
+import com.badlogic.gdx.sionengine.Settings;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
@@ -24,18 +25,30 @@ public class AbductionSystem extends EntitySystem {
 	private Vector3 m_shipToAstronaut = new Vector3();
 	private Vector3 m_down = new Vector3();
 	private Vector2 m_force = new Vector2();
-	private float m_abductionRadius = SionEngine.getSettings().getFloat("g_abductionRadius", 10.0f);
-	private float m_abductionCloseRadius = SionEngine.getSettings().getFloat("g_abductionClose", 3.5f);
-	private float m_abductionForce = SionEngine.getSettings().getFloat("g_abductionForce", 150.0f);
-	private float m_abductionAngle = MathUtils.cos(MathUtils.degRad * SionEngine.getSettings().getFloat("g_abductionAngle", 90.0f) * 0.5f);
-	private float m_maxAstronautSpeed = SionEngine.getSettings().getFloat("g_maxAstronautSpeed", 2.0f);
+	private float m_abductionRadius;
+	private float m_abductionCloseRadius;
+	private float m_abductionForce;
+	private float m_abductionAngle;
+	private float m_maxAstronautSpeed;
 	
-	public AbductionSystem(EntityWorld world, int priority, int loggingLevel) {
-		super(world, priority, loggingLevel);
+	public AbductionSystem(EntityWorld world, int priority) {
+		super(world, priority);
+		
+		Settings settings = SionEngine.getSettings();
+		
+		m_logger.setLevel(settings.getInt("abduction.log", 1));
+		m_logger.info("initializing");
+		
 		m_aspect.addToAll(State.class);
 		m_aspect.addToAll(Transform.class);
 		m_aspect.addToAll(Abductable.class);
 		m_aspect.addToAll(AnimatedSprite.class);
+		
+		m_abductionRadius = settings.getFloat("abduction.radius", 10.0f);
+		m_abductionCloseRadius = settings.getFloat("abduction.close", 3.5f);
+		m_abductionForce = settings.getFloat("abduction.force", 150.0f);
+		m_abductionAngle = MathUtils.cos(MathUtils.degRad * settings.getFloat("abduction.angle", 90.0f) * 0.5f);
+		m_maxAstronautSpeed = settings.getFloat("abduction.maxSpeed", 2.0f);
 		
 		m_down.y = -1.0f;
 	}
