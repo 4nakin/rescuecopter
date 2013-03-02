@@ -4,7 +4,6 @@ import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Component;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
-import com.badlogic.gdx.sionengine.entity.EntityWorld;
 import com.badlogic.gdx.sionengine.entity.components.Asset;
 import com.badlogic.gdx.sionengine.entity.components.AsynchronousAsset;
 import com.badlogic.gdx.utils.ObjectMap.Values;

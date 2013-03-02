@@ -2,14 +2,18 @@ package com.siondream.rescue;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.SionEngine;
+import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntityWorld;
 import com.badlogic.gdx.sionengine.entity.components.AnimatedSprite;
 import com.badlogic.gdx.sionengine.entity.components.Asset;
+import com.badlogic.gdx.sionengine.entity.components.CameraComponent;
 import com.badlogic.gdx.sionengine.entity.components.Physics;
 import com.badlogic.gdx.sionengine.entity.components.State;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
 import com.badlogic.gdx.sionengine.entity.components.Type;
+import com.badlogic.gdx.sionengine.entity.managers.TagManager;
 import com.badlogic.gdx.sionengine.entity.pools.AnimatedSpritePool;
 import com.badlogic.gdx.sionengine.entity.pools.AssetPool;
 import com.badlogic.gdx.sionengine.entity.pools.PhysicsPool;
@@ -20,7 +24,6 @@ import com.badlogic.gdx.sionengine.entity.systems.AssetSystem;
 import com.badlogic.gdx.sionengine.entity.systems.DisposingSystem;
 import com.badlogic.gdx.sionengine.entity.systems.PhysicsSystem;
 import com.badlogic.gdx.sionengine.entity.systems.RenderingSystem;
-import com.badlogic.gdx.utils.Logger;
 
 public class RescueCopter extends SionEngine {
 	
@@ -40,12 +43,13 @@ public class RescueCopter extends SionEngine {
 		world.setComponentPool(Type.class, new TypePool());
 		
 		world.addSystem(new AssetSystem(1));
-		world.addSystem(new RenderingSystem(2, SionEngine.getCamera()));
+		world.addSystem(new RenderingSystem(2));
 		world.addSystem(new PlayerController(3));
 		world.addSystem(new AbductionSystem(4));
-		world.addSystem(new PhysicsSystem(5, SionEngine.getCamera()));
+		world.addSystem(new PhysicsSystem(5));
 		world.addSystem(new CollisionHandlingSystem(this, 6));
-		world.addSystem(new DisposingSystem(7));
+		world.addSystem(new ShipCameraSystem(7));
+		world.addSystem(new DisposingSystem(8));
 		
 		world.prepare();
 		
@@ -53,9 +57,21 @@ public class RescueCopter extends SionEngine {
 	
 		m_screens.put("GameScreen", new GameScreen(this));
 		setScreen("GameScreen");
+		
+		createCamera();
 	}
 	
 	public Skin getSkin() {
 		return m_skin;
+	}
+	
+	private void createCamera() {
+		EntityWorld world = getEntityWorld();
+		Entity cameraEntity = world.createEntity();
+		cameraEntity.addComponent(new CameraComponent());
+		world.addEntity(cameraEntity);
+		
+		TagManager tagManager = world.getManager(TagManager.class);
+		tagManager.register(Globals.entity_camera, cameraEntity);
 	}
 }

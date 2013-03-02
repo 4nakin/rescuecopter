@@ -11,7 +11,6 @@ import com.badlogic.gdx.sionengine.Settings;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
-import com.badlogic.gdx.sionengine.entity.EntityWorld;
 import com.badlogic.gdx.sionengine.entity.components.AnimatedSprite;
 import com.badlogic.gdx.sionengine.entity.components.Physics;
 import com.badlogic.gdx.sionengine.entity.components.State;

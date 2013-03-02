@@ -6,4 +6,6 @@ public class Globals {
 	static final public int state_erase = SionEngine.getIDGenerator().getID("state_erase");
 	
 	static final public int type_invalid = SionEngine.getIDGenerator().getID("type_invalid");
+	
+	static final public int entity_camera = SionEngine.getIDGenerator().getID("entity_camera");
 }

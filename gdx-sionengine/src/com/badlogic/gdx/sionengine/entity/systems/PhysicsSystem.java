@@ -1,7 +1,6 @@
 package com.badlogic.gdx.sionengine.entity.systems;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -12,11 +11,12 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.Settings;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
-import com.badlogic.gdx.sionengine.entity.EntityWorld;
+import com.badlogic.gdx.sionengine.entity.components.CameraComponent;
 import com.badlogic.gdx.sionengine.entity.components.Physics;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
 import com.badlogic.gdx.sionengine.entity.components.Type;
@@ -33,12 +33,11 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 	
 	private World m_box2DWorld;
 	private Box2DDebugRenderer m_box2DRenderer;
-	private OrthographicCamera m_camera;
 	private int m_velocityIterations;
 	private int m_positionIterations;
 	private ObjectMap<Integer, ObjectMap<Integer, CollisionHandler>> m_handlers;
 	
-	public PhysicsSystem(int priority, OrthographicCamera camera) {
+	public PhysicsSystem(int priority) {
 		super(priority);
 		
 		Settings settings = SionEngine.getSettings();
@@ -49,7 +48,6 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 		m_aspect.addToAll(Physics.class);
 		final Vector3 gravity = settings.getVector("physics.gravity", Vector3.Zero);
 		m_box2DWorld = new World(new Vector2(gravity.x, gravity.y), settings.getBoolean("physics.doSleep", true));;
-		m_camera = camera;
 		m_handlers = new ObjectMap<Integer, ObjectMap<Integer, CollisionHandler>>();
 		
 		m_box2DRenderer = new Box2DDebugRenderer(settings.getBoolean("physics.drawBodies", true),
@@ -81,7 +79,12 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 	
 	@Override
 	public void end() {
-		m_box2DRenderer.render(m_box2DWorld, m_camera.combined);
+		Entity cameraEntity = m_world.getEntityByTag(Globals.entity_camera);
+		
+		if (cameraEntity != null) {
+			CameraComponent cameraComponent = cameraEntity.getComponent(CameraComponent.class);
+			m_box2DRenderer.render(m_box2DWorld, cameraComponent.get().combined);
+		}
 	}
 	
 	@Override

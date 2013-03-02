@@ -8,12 +8,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.Settings;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
-import com.badlogic.gdx.sionengine.entity.EntityWorld;
 import com.badlogic.gdx.sionengine.entity.components.AnimatedSprite;
+import com.badlogic.gdx.sionengine.entity.components.CameraComponent;
 import com.badlogic.gdx.sionengine.entity.components.State;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
 import com.badlogic.gdx.utils.Array;
@@ -25,8 +26,7 @@ public class RenderingSystem extends EntitySystem {
 	private ZSort m_sorter = new ZSort();
 	private Array<Entity> m_sorted;
 	
-	public RenderingSystem(int priority,
-						   OrthographicCamera camera) {
+	public RenderingSystem(int priority) {
 		
 		super(priority);
 		
@@ -38,13 +38,20 @@ public class RenderingSystem extends EntitySystem {
 		m_aspect.addToAll(AnimatedSprite.class);
 		m_aspect.addToAll(State.class);
 		m_batch = new SpriteBatch();
-		m_camera = camera;
 		m_sorted = new Array<Entity>(settings.getInt("rendering.queueSize", 500));
 	}
 
 	@Override
 	public void begin() {
-		m_batch.setProjectionMatrix(m_camera.combined);
+		Entity cameraEntity = m_world.getEntityByTag(Globals.entity_camera);
+		
+		if (cameraEntity != null) {
+			CameraComponent cameraComponent = cameraEntity.getComponent(CameraComponent.class);
+			m_camera = cameraComponent.get();
+			m_camera.update();
+			m_batch.setProjectionMatrix(m_camera.combined);
+		}
+		
 		m_batch.begin();
 	}
 	
@@ -95,6 +102,11 @@ public class RenderingSystem extends EntitySystem {
 	}
 	
 	private boolean isInFrustum(AnimatedSprite anim, Transform transform) {
+		
+		if (m_camera == null) {
+			return false;
+		}
+		
 		Vector3 position = transform.getPosition();
 		Vector2 origin = anim.getOrigin();
 		Vector2 size = anim.getSize();

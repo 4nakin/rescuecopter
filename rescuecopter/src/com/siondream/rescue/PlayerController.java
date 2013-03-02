@@ -1,7 +1,6 @@
 package com.siondream.rescue;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -9,8 +8,8 @@ import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
-import com.badlogic.gdx.sionengine.entity.EntityWorld;
 import com.badlogic.gdx.sionengine.entity.components.AnimatedSprite;
+import com.badlogic.gdx.sionengine.entity.components.CameraComponent;
 import com.badlogic.gdx.sionengine.entity.components.Physics;
 import com.badlogic.gdx.sionengine.entity.components.State;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
@@ -50,18 +49,22 @@ public class PlayerController extends EntitySystem {
 			Vector3 shipPos = e.getComponent(Transform.class).getPosition();
 			m_touchPos.x = Gdx.input.getX();
 			m_touchPos.y = Gdx.input.getY();
-			OrthographicCamera camera = SionEngine.getCamera();
-			camera.unproject(m_touchPos);
 			
-			if (m_touchPos.x > shipPos.x) {
-				body.applyForceToCenter(55.0f, 0.0f);
-			}
-			else if (m_touchPos.x < shipPos.x) {
-				body.applyForceToCenter(-55.0f, 0.0f);
-			}
+			Entity cameraEntity = m_world.getEntityByTag(Globals.entity_camera);
 			
-			if (m_touchPos.y > shipPos.y) {
-				body.applyForceToCenter(0.0f, 100.0f);
+			if (cameraEntity != null) {
+				cameraEntity.getComponent(CameraComponent.class).get().unproject(m_touchPos);
+				
+				if (m_touchPos.x > shipPos.x) {
+					body.applyForceToCenter(55.0f, 0.0f);
+				}
+				else if (m_touchPos.x < shipPos.x) {
+					body.applyForceToCenter(-55.0f, 0.0f);
+				}
+				
+				if (m_touchPos.y > shipPos.y) {
+					body.applyForceToCenter(0.0f, 100.0f);
+				}
 			}
 		}
 		

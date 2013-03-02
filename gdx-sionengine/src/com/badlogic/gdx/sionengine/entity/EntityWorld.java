@@ -110,6 +110,14 @@ public class EntityWorld implements Disposable {
 		return m_entities.get(id);
 	}
 	
+	public Entity getEntityByTag(String tag) {
+		return getManager(TagManager.class).getEntity(tag);
+	}
+	
+	public Entity getEntityByTag(int tag) {
+		return getManager(TagManager.class).getEntity(tag);
+	}
+	
 	// ENTITY SYSTEMS METHODS
 	public void addSystem(EntitySystem system) {
 		m_logger.info("adding system " + system);

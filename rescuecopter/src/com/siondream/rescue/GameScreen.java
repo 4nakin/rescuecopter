@@ -2,15 +2,12 @@ package com.siondream.rescue;
 
 import java.util.Iterator;
 
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.equations.Quad;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -25,6 +22,7 @@ import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntityWorld;
 import com.badlogic.gdx.sionengine.entity.components.AnimatedSprite;
 import com.badlogic.gdx.sionengine.entity.components.Asset;
+import com.badlogic.gdx.sionengine.entity.components.CameraComponent;
 import com.badlogic.gdx.sionengine.entity.components.Physics;
 import com.badlogic.gdx.sionengine.entity.components.State;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
@@ -37,7 +35,6 @@ import com.badlogic.gdx.sionengine.maps.Map;
 import com.badlogic.gdx.sionengine.maps.MapObject;
 import com.badlogic.gdx.sionengine.maps.MapObjects;
 import com.badlogic.gdx.sionengine.maps.RectangleMapObject;
-import com.badlogic.gdx.sionengine.tweeners.CameraTweener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Logger;
 
@@ -58,7 +55,6 @@ public class GameScreen implements Screen, InputProcessor {
 	private Map m_map;
 	private GleedMapRenderer m_mapRenderer;
 	private MapBodyManager m_mapBodyManager = new MapBodyManager();
-	private RectangleMapObject m_cameraBounds = null;
 	private Chronometer m_chrono = new Chronometer();
 	private Time m_time = new Time(0, 0, 0, 0);
 	
@@ -153,7 +149,6 @@ public class GameScreen implements Screen, InputProcessor {
 		m_mapRenderer.dispose();
 		m_mapRenderer = null;
 		SionEngine.getAssetManager().unload("data/level.xml");
-		m_cameraBounds = null;
 	}
 
 	@Override
@@ -172,7 +167,13 @@ public class GameScreen implements Screen, InputProcessor {
 					m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
 					m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
 					m_mapBodyManager.createPhysics(m_map, "Physics");
-					m_cameraBounds = (RectangleMapObject)m_map.getLayers().getLayer("Camera").getObjects().getObject("bounds");
+					RectangleMapObject boundsObject = (RectangleMapObject)m_map.getLayers().getLayer("Camera").getObjects().getObject("bounds");
+					
+					if (boundsObject != null) {					
+						EntityWorld world = SionEngine.getEntityWorld();
+						ShipCameraSystem cameraSystem = world.getSystem(ShipCameraSystem.class);
+						cameraSystem.setBounds(boundsObject.getRectangle()); 
+					}
 				}
 				
 				resetGame();
@@ -193,9 +194,15 @@ public class GameScreen implements Screen, InputProcessor {
 		}
 		
 		if (m_mapRenderer != null) {
-			m_mapRenderer.begin();
-			m_mapRenderer.render(SionEngine.getCamera());
-			m_mapRenderer.end();
+			Entity cameraEntity = SionEngine.getEntityWorld().getEntityByTag(Globals.entity_camera);
+			
+			if (cameraEntity != null) {
+				CameraComponent cameraComponent = cameraEntity.getComponent(CameraComponent.class);
+				m_mapRenderer.begin();
+				m_mapRenderer.render(cameraComponent.get());
+				m_mapRenderer.end();
+			}
+			
 		}
 		
 		if (m_state == ScreenState.Lose) {
@@ -205,10 +212,8 @@ public class GameScreen implements Screen, InputProcessor {
 		if (m_state == ScreenState.Win) {
 			return;
 		}
-		
-		updateCamera();		
+				
 		updateHUD();
-		
 	}
 
 	private void updateHUD() {
@@ -365,34 +370,5 @@ public class GameScreen implements Screen, InputProcessor {
 			groupManager.register(GameGlobals.group_astronauts, entity);
 			m_logger.info("Created astronaut in " + position);
 		}
-	}
-	
-	private void updateCamera() {
-		OrthographicCamera camera = SionEngine.getCamera();
-		Entity spaceShip = SionEngine.getEntityWorld().getManager(TagManager.class).getEntity(GameGlobals.type_spaceship);
-		Vector3 position = spaceShip.getComponent(Transform.class).getPosition();
-		
-		Vector3 destPos = new Vector3();
-		Rectangle bounds = m_cameraBounds.getRectangle();
-		
-		float camWidth = SionEngine.getVirtualWidth() * SionEngine.getUnitsPerPixel();
-		float camHeight = SionEngine.getVirtualHeight() * SionEngine.getUnitsPerPixel();
-		float mapWidth = bounds.getWidth() * SionEngine.getUnitsPerPixel();
-		float mapHeight = bounds.getHeight() * SionEngine.getUnitsPerPixel();
-		
-		float maxX = mapWidth - camWidth * 0.5f;
-		float maxY = mapHeight - camHeight * 0.5f;
-		float minX = bounds.getX() * SionEngine.getUnitsPerPixel() + camWidth * 0.5f;
-		float minY = bounds.getY() * SionEngine.getUnitsPerPixel() + camHeight * 0.5f;
-		
-		// Check map bounds
-		destPos.x = Math.max(Math.min(position.x, maxX), minX);
-		destPos.y = Math.max(Math.min(position.y, maxY), minY);
-		destPos.z = camera.position.z;
-		
-		Tween.to(camera, CameraTweener.Position, 0.1f).
-				 ease(Quad.IN).
-				 target(destPos.x, destPos.y, destPos.z).
-				 start(SionEngine.getTweenManager());
 	}
 }
