@@ -4,9 +4,11 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.sionengine.SionEngine;
+import com.badlogic.gdx.sionengine.animation.AnimationData;
 import com.badlogic.gdx.sionengine.entity.Component;
 
-public class TextureComponent extends Component implements AsynchronousAsset {
+public class TextureComponent extends Component
+							  implements AsynchronousAsset, Cullable {
 	
 	private String m_file = null;
 	private TextureRegion m_region = null;
@@ -16,7 +18,15 @@ public class TextureComponent extends Component implements AsynchronousAsset {
 	}
 	
 	public void setFileName(String name) {
-		m_file = name;
+		if (m_file != name) {
+			reset();
+			
+			m_file = name;
+			
+			if (m_file != null) {
+				SionEngine.getAssetManager().load(m_file, Texture.class);
+			}
+		}
 	}
 	
 	public TextureRegion getRegion() {
@@ -50,5 +60,25 @@ public class TextureComponent extends Component implements AsynchronousAsset {
 	@Override
 	public String toString() {
 		return "texture " + m_file;
+	}
+
+	@Override
+	public float getWidth() {
+		return m_region != null? m_region.getRegionWidth() : 0.0f;
+	}
+
+	@Override
+	public float getHeight() {
+		return m_region != null? m_region.getRegionHeight() : 0.0f;
+	}
+
+	@Override
+	public float getOriginX() {
+		return getWidth() * 0.5f;
+	}
+
+	@Override
+	public float getOriginY() {
+		return getHeight() * 0.5f;
 	}
 }

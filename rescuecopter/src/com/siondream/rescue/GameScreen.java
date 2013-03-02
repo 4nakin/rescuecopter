@@ -25,6 +25,7 @@ import com.badlogic.gdx.sionengine.entity.components.Asset;
 import com.badlogic.gdx.sionengine.entity.components.CameraComponent;
 import com.badlogic.gdx.sionengine.entity.components.Physics;
 import com.badlogic.gdx.sionengine.entity.components.State;
+import com.badlogic.gdx.sionengine.entity.components.TextureComponent;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
 import com.badlogic.gdx.sionengine.entity.components.Type;
 import com.badlogic.gdx.sionengine.entity.managers.GroupManager;
@@ -301,13 +302,14 @@ public class GameScreen implements Screen, InputProcessor {
 		Entity entity = world.createEntity();
 		
 		Transform transform = world.createComponent(Transform.class);
-		AnimatedSprite anim = world.createComponent(AnimatedSprite.class);
+		//AnimatedSprite anim = world.createComponent(AnimatedSprite.class);
 		Physics physics = world.createComponent(Physics.class);
 		State state = world.createComponent(State.class);
 		Asset asset = world.createComponent(Asset.class);
 		Type type = world.createComponent(Type.class);
+		TextureComponent texture = new TextureComponent();
 		
-		anim.setFileName("data/spaceship.xml");
+		//anim.setFileName("data/spaceship.xml");
 		physics.setUserData(entity);
 		physics.setFileName("data/spaceship_physics.xml");
 		physics.setWakeUp(true);
@@ -318,13 +320,15 @@ public class GameScreen implements Screen, InputProcessor {
 		position.y = circle.getCircle().y * SionEngine.getUnitsPerPixel();
 		transform.setPosition(position);
 		type.set(GameGlobals.type_spaceship);
+		texture.setFileName("data/spaceship.png");
 		
 		entity.addComponent(transform);
-		entity.addComponent(anim);
+		//entity.addComponent(anim);
 		entity.addComponent(state);
 		entity.addComponent(asset);
 		entity.addComponent(physics);
 		entity.addComponent(new SpaceShip());
+		entity.addComponent(texture);
 		
 		entity.addComponent(type);
 		world.addEntity(entity);

@@ -28,7 +28,6 @@ public class PlayerController extends EntitySystem {
 		m_logger.info("initializing");
 		
 		m_aspect.addToAll(Transform.class);
-		m_aspect.addToAll(AnimatedSprite.class);
 		m_aspect.addToAll(Physics.class);
 		m_aspect.addToAll(SpaceShip.class);
 	}

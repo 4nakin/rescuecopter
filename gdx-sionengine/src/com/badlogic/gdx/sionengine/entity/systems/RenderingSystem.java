@@ -6,7 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.Settings;
@@ -15,7 +15,9 @@ import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntitySystem;
 import com.badlogic.gdx.sionengine.entity.components.AnimatedSprite;
 import com.badlogic.gdx.sionengine.entity.components.CameraComponent;
+import com.badlogic.gdx.sionengine.entity.components.Cullable;
 import com.badlogic.gdx.sionengine.entity.components.State;
+import com.badlogic.gdx.sionengine.entity.components.TextureComponent;
 import com.badlogic.gdx.sionengine.entity.components.Transform;
 import com.badlogic.gdx.utils.Array;
 
@@ -35,8 +37,8 @@ public class RenderingSystem extends EntitySystem {
 		m_logger.setLevel(settings.getInt("rendering.log", 1));
 		m_logger.info("initializing");
 		m_aspect.addToAll(Transform.class);
-		m_aspect.addToAll(AnimatedSprite.class);
-		m_aspect.addToAll(State.class);
+		m_aspect.addToAny(AnimatedSprite.class);
+		m_aspect.addToAny(TextureComponent.class);
 		m_batch = new SpriteBatch();
 		m_sorted = new Array<Entity>(settings.getInt("rendering.queueSize", 500));
 	}
@@ -59,17 +61,45 @@ public class RenderingSystem extends EntitySystem {
 	public void end() {
 		m_sorted.sort(m_sorter);
 		
-		for (int i = 0; i < m_sorted.size; ++i) {
-			AnimatedSprite anim = (AnimatedSprite)m_sorted.get(i).getComponent(AnimatedSprite.class);
-			Texture texture = anim.getTexture();
+		for (Entity entity : m_sorted) {
+			AnimatedSprite anim = entity.getComponent(AnimatedSprite.class);
 			
-			if (texture != null) {
-				m_batch.draw(texture, anim.getVertices(), 0, AnimatedSprite.SpriteSize);
+			if (anim != null) {
+				Texture texture = anim.getTexture();
+				
+				if (texture != null) {
+					m_batch.draw(texture, anim.getVertices(), 0, AnimatedSprite.SpriteSize);
+				}
+				
+				continue;
 			}
+			
+			TextureComponent textComponent = entity.getComponent(TextureComponent.class);
+			
+			if (textComponent != null) {
+				TextureRegion region = textComponent.getRegion();
+				Transform transform = entity.getComponent(Transform.class);
+				Vector3 position = transform.getPosition();
+				float units = SionEngine.getUnitsPerPixel();
+				float scale = transform.getScale() * units;
+				
+				m_batch.draw(region,
+							 position.x,
+							 position.y,
+							 -textComponent.getOriginX() * units,
+							 -textComponent.getOriginY() * units,
+							 region.getRegionWidth(),
+							 region.getRegionHeight(),
+							 scale,
+							 scale,
+							 transform.getRotation());
+				
+				continue;
+			}
+			
 		}
 		
 		m_sorted.clear();
-		
 		m_batch.end();
 	}
 	
@@ -80,19 +110,37 @@ public class RenderingSystem extends EntitySystem {
 	
 	@Override
 	protected void process(Entity e) {
-		AnimatedSprite anim = (AnimatedSprite)e.getComponent(AnimatedSprite.class);
-		State state = (State)e.getComponent(State.class);
-		Transform transform = (Transform)e.getComponent(Transform.class);
+		AnimatedSprite anim = e.getComponent(AnimatedSprite.class);
 		
-		if (anim.isLoaded()) {
-			anim.updateState(state.get());
+		if (anim != null && anim.isLoaded()) {
+			State state = e.getComponent(State.class);
+			Transform transform = e.getComponent(Transform.class);
+			
+			if (state != null) {
+				anim.updateState(state.get());
+			}
+			
 			anim.updateFrame(Gdx.graphics.getDeltaTime());
 			anim.applyTransform(transform.getPosition(), transform.getRotation(), transform.getScale());
 			anim.computeVertices();
 			
-			if (isInFrustum(anim, transform)) {
+			if (isInFustrum(anim, transform)) {
 				m_sorted.add(e);
 			}
+			
+			return;
+		}
+		
+		TextureComponent textComponent = e.getComponent(TextureComponent.class);
+		
+		if (textComponent != null && textComponent.isLoaded()) {
+			Transform transform = e.getComponent(Transform.class);
+			
+			if (isInFustrum(textComponent, transform)) {
+				m_sorted.add(e);
+			}
+			
+			return;
 		}
 	}
 	
@@ -101,21 +149,24 @@ public class RenderingSystem extends EntitySystem {
 		return "RenderingSystem";
 	}
 	
-	private boolean isInFrustum(AnimatedSprite anim, Transform transform) {
+	private boolean isInFustrum(Cullable img, Transform transform) {
 		
 		if (m_camera == null) {
 			return false;
 		}
 		
 		Vector3 position = transform.getPosition();
-		Vector2 origin = anim.getOrigin();
-		Vector2 size = anim.getSize();
+		float originX = img.getOriginX();
+		float originY = img.getOriginY();
+		float width = img.getWidth();
+		float height = img.getHeight();
+		float scale = transform.getScale();
 		Vector3 cameraPos = m_camera.position;
 		float halfWidth = m_camera.viewportWidth * 0.5f;
 		float halfHeight = m_camera.viewportHeight * 0.5f;
 
-		if (position.y + size.y - origin.y < cameraPos.x - halfWidth || position.x - origin.x > cameraPos.x + halfWidth) return false;
-		if (position.y + size.y - origin.y < cameraPos.y - halfHeight || position.y - origin.y > cameraPos.y + halfHeight) return false;
+		if (position.x + width * scale - originX < cameraPos.x - halfWidth || position.x - originX > cameraPos.x + halfWidth) return false;
+		if (position.y + height * scale - originY < cameraPos.y - halfHeight || position.y - originY > cameraPos.y + halfHeight) return false;
 		
 		return true;
 	}

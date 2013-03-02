@@ -12,7 +12,8 @@ import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.animation.AnimationData;
 import com.badlogic.gdx.sionengine.entity.Component;
 
-public class AnimatedSprite extends Component implements AsynchronousAsset {
+public class AnimatedSprite extends Component
+							implements AsynchronousAsset, Cullable {
 	// Vertices size
 	public static final int VertexSize = 2 + 1 + 2;
 	public static final int SpriteSize = 4 * VertexSize;
@@ -72,14 +73,6 @@ public class AnimatedSprite extends Component implements AsynchronousAsset {
 		m_vertices[C2] = color;
 		m_vertices[C3] = color;
 		m_vertices[C4] = color;
-	}
-	
-	public Vector2 getSize() {
-		return m_size;
-	}
-	
-	public Vector2 getOrigin() {
-		return m_origin;
 	}
 	
 	public float[] getVertices() {
@@ -324,4 +317,24 @@ public class AnimatedSprite extends Component implements AsynchronousAsset {
 	static private final int C4 = 17;
 	static private final int U4 = 18;
 	static private final int V4 = 19;
+
+	@Override
+	public float getWidth() {
+		return m_size.x;
+	}
+
+	@Override
+	public float getHeight() {
+		return m_size.y;
+	}
+
+	@Override
+	public float getOriginX() {
+		return m_origin.x;
+	}
+
+	@Override
+	public float getOriginY() {
+		return m_origin.y;
+	}
 }
