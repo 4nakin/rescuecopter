@@ -5,8 +5,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.sionengine.entity.Component;
+import com.badlogic.gdx.sionengine.entity.EntityWorld;
+import com.badlogic.gdx.sionengine.entity.systems.PhysicsSystem;
 import com.badlogic.gdx.sionengine.physics.PhysicsData;
 import com.badlogic.gdx.utils.Array;
 
@@ -56,7 +59,10 @@ public class Physics extends Component implements AsynchronousAsset {
 		if (manager.isLoaded(m_file, PhysicsData.class)) {
 			PhysicsData data = manager.get(m_file, PhysicsData.class);
 			
-			m_body = SionEngine.getWorld().createBody(data.getBodyDef());
+			EntityWorld entityWorld = SionEngine.getEntityWorld();
+			PhysicsSystem physicsSystem = entityWorld.getSystem(PhysicsSystem.class);
+			World world = physicsSystem.getWorld();
+			m_body = world.createBody(data.getBodyDef());
 			m_body.setMassData(data.getMassData());
 			m_body.setUserData(m_userData);
 			
@@ -96,7 +102,10 @@ public class Physics extends Component implements AsynchronousAsset {
 
 	private void destroyBody() {
 		if (m_body != null) {
-			SionEngine.getWorld().destroyBody(m_body);
+			EntityWorld entityWorld = SionEngine.getEntityWorld();
+			PhysicsSystem physicsSystem = entityWorld.getSystem(PhysicsSystem.class);
+			World world = physicsSystem.getWorld();
+			world.destroyBody(m_body);
 			m_body = null;
 		}
 	}

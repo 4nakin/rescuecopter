@@ -15,6 +15,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.sionengine.SionEngine;
+import com.badlogic.gdx.sionengine.entity.EntityWorld;
+import com.badlogic.gdx.sionengine.entity.systems.PhysicsSystem;
 import com.badlogic.gdx.sionengine.maps.CircleMapObject;
 import com.badlogic.gdx.sionengine.maps.Map;
 import com.badlogic.gdx.sionengine.maps.MapLayer;
@@ -54,7 +56,9 @@ public class MapBodyManager {
 	}
 	
 	public void createPhysics(Map map, String layerName) {
-		World world = SionEngine.getWorld();
+		EntityWorld entityWorld = SionEngine.getEntityWorld();
+		PhysicsSystem physicsSystem = entityWorld.getSystem(PhysicsSystem.class);
+		World world = physicsSystem.getWorld();
 		float units = SionEngine.getUnitsPerPixel();
 		
 		MapLayer layer = map.getLayers().getLayer(layerName);
@@ -153,7 +157,9 @@ public class MapBodyManager {
 	}
 	
 	public void destroyPhysics() {
-		World world = SionEngine.getWorld();
+		EntityWorld entityWorld = SionEngine.getEntityWorld();
+		PhysicsSystem physicsSystem = entityWorld.getSystem(PhysicsSystem.class);
+		World world = physicsSystem.getWorld();
 		
 		for (Body body : m_bodies) {
 			world.destroyBody(body);

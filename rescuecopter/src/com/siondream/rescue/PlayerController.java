@@ -22,8 +22,8 @@ public class PlayerController extends EntitySystem {
 	private float m_recoveryTimer = m_recoveryTime;
 	private float m_maxSpeed = SionEngine.getSettings().getFloat("playerController.maxSpeed", 10.0f);
 	
-	public PlayerController(EntityWorld world, int priority) {
-		super(world, priority);
+	public PlayerController(int priority) {
+		super(priority);
 		
 		m_logger.setLevel(SionEngine.getSettings().getInt("playerController.log", 1));
 		m_logger.info("initializing");

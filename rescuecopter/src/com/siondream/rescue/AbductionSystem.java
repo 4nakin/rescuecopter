@@ -31,8 +31,8 @@ public class AbductionSystem extends EntitySystem {
 	private float m_abductionAngle;
 	private float m_maxAstronautSpeed;
 	
-	public AbductionSystem(EntityWorld world, int priority) {
-		super(world, priority);
+	public AbductionSystem(int priority) {
+		super(priority);
 		
 		Settings settings = SionEngine.getSettings();
 		

@@ -6,12 +6,10 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.equations.Quad;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -208,12 +206,7 @@ public class GameScreen implements Screen, InputProcessor {
 			return;
 		}
 		
-		updateCamera();
-		
-		SionEngine.getEntityWorld().update();
-		SionEngine.getTweenManager().update(Gdx.graphics.getDeltaTime());
-		
-		
+		updateCamera();		
 		updateHUD();
 		
 	}

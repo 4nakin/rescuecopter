@@ -1,9 +1,11 @@
 package com.badlogic.gdx.sionengine.entity;
 
+import com.badlogic.gdx.sionengine.SionEngine;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Logger;
 
-public abstract class EntitySystem implements EntityObserver {
+public abstract class EntitySystem implements EntityObserver, Disposable {
 
 	protected Array<Entity> m_entities;
 	protected EntityWorld m_world;
@@ -12,8 +14,8 @@ public abstract class EntitySystem implements EntityObserver {
 	
 	private int m_priority;
 	
-	public EntitySystem(EntityWorld world, int priority) {
-		m_world = world;
+	public EntitySystem(int priority) {
+		m_world = SionEngine.getEntityWorld();
 		m_entities = new Array<Entity>(m_world.getMaxEntities());
 		m_priority = priority;
 		m_aspect = new Aspect();
@@ -55,6 +57,11 @@ public abstract class EntitySystem implements EntityObserver {
 		if (m_entities.removeValue(e, false)) {
 			m_logger.info("removing entity " + e + " from " + this);
 		}
+	}
+	
+	@Override
+	public void dispose() {
+		
 	}
 	
 	@Override

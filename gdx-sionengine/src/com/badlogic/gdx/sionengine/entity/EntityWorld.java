@@ -6,6 +6,7 @@ import java.util.Iterator;
 import com.badlogic.gdx.sionengine.entity.managers.GroupManager;
 import com.badlogic.gdx.sionengine.entity.managers.TagManager;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -14,7 +15,7 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.Pool;
 
 @SuppressWarnings("rawtypes")
-public class EntityWorld {
+public class EntityWorld implements Disposable {
 	
 	private Logger m_logger;
 	private EntityPool m_entityPool;
@@ -188,6 +189,20 @@ public class EntityWorld {
 			int priorityB = systemB.getPriority();
 			
 			return priorityA - priorityB;
+		}
+	}
+
+	@Override
+	public void dispose() {
+		for (EntitySystem system : m_orderedSystems) {
+			system.dispose();
+		}
+		
+		Iterator<Entry<Class<? extends EntityManager>, EntityManager>> it;
+		it = m_managers.entries().iterator();
+		
+		while(it.hasNext()) {
+			it.next().value.dispose();
 		}
 	}
 }

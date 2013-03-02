@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
 	<!-- Core settings  -->
+	<int 	key="core.log" 						value="1" />
 	<int 	key="core.virtualWidth" 			value="1280" />
 	<int 	key="core.virtualHeight" 			value="720" />
 	<float 	key="core.pixelsPerUnit" 			value="30.0" />
@@ -19,7 +20,6 @@
 	<int 	key="disposing.log" 				value="1" />
 	
 	<!--  Physics -->
-	<bool 	key="physics.enable" 				value="true" />
 	<int 	key="physics.log" 					value="1" />
 	<vector key="physics.gravity" 				x="0.0" y="-9.8" z="0.0" />
 	<bool 	key="physics.doSleep" 				value="true" />

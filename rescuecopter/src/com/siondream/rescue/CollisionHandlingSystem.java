@@ -20,8 +20,8 @@ public class CollisionHandlingSystem extends EntitySystem {
 
 	private RescueCopter m_game;
 	
-	public CollisionHandlingSystem(RescueCopter game, EntityWorld world, int priority) {
-		super(world, priority);
+	public CollisionHandlingSystem(RescueCopter game, int priority) {
+		super(priority);
 		
 		m_logger.setLevel(SionEngine.getSettings().getInt("collisions.log", 1));
 		m_logger.info("initializing");
@@ -32,11 +32,8 @@ public class CollisionHandlingSystem extends EntitySystem {
 		
 		m_game = game;
 		
-		PhysicsSystem physics = world.getSystem(PhysicsSystem.class);
-		physics.addCollisionHandler(GameGlobals.type_spaceship,
-									0,
-									new ShipLevelCollisionHandler());
-		
+		PhysicsSystem physics = m_world.getSystem(PhysicsSystem.class);
+		physics.addCollisionHandler(GameGlobals.type_spaceship, 0, new ShipLevelCollisionHandler());
 	}
 
 	@Override

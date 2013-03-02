@@ -13,8 +13,8 @@ public class AssetSystem extends EntitySystem {
 
 	private boolean m_isFullyLoaded = false;
 	
-	public AssetSystem(EntityWorld world, int priority) {
-		super(world, priority);
+	public AssetSystem(int priority) {
+		super(priority);
 		m_logger.setLevel(SionEngine.getSettings().getInt("assets.log", 1));
 		m_logger.info("initializing");
 		m_aspect.addToAll(Asset.class);

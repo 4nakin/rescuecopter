@@ -12,8 +12,8 @@ public class DisposingSystem extends EntitySystem {
 
 	private Array<Entity> m_pendingErase = new Array<Entity>();
 	
-	public DisposingSystem(EntityWorld world, int priority) {
-		super(world, priority);
+	public DisposingSystem(int priority) {
+		super(priority);
 		m_logger.setLevel(SionEngine.getSettings().getInt("disposing.log", 1));
 		m_logger.info("initializing");
 		m_aspect.addToAll(State.class);

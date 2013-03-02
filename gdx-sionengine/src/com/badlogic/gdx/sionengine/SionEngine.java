@@ -40,9 +40,7 @@ public class SionEngine extends Game {
 	private static AssetManager m_assetManager;
 	private static TweenManager m_tweenManager;
 	private static LanguageManager m_languageManager;
-	private static World m_world;
 	private static EntityWorld m_entityWorld;
-	private static SpriteBatch m_batch;
 	private static OrthographicCamera m_camera;
 	private static int m_virtualWidth;
 	private static int m_virtualHeight;
@@ -86,16 +84,10 @@ public class SionEngine extends Game {
 		m_pixelsPerUnit = m_settings.getFloat("core.pixelsPerUnit", 1.0f);
 		m_unitsPerPixel = 1.0f / m_pixelsPerUnit;
 		
-		if (m_settings.getBoolean("physics.enable", true)) {
-			final Vector3 gravity = m_settings.getVector("physics.gravity", Vector3.Zero);
-			m_world = new World(new Vector2(gravity.x, gravity.y), m_settings.getBoolean("physics.doSleep", true));
-		}
-		
 		m_entityWorld = new EntityWorld(m_settings.getInt("entity.poolSize", 100),
 										m_settings.getInt("entity.maxComponents", 10),
 										m_settings.getInt("entity.log", Logger.INFO));
-		
-		m_batch = new SpriteBatch();
+	
 		m_camera = new OrthographicCamera(m_virtualWidth, m_virtualHeight);
 		m_camera.zoom = m_unitsPerPixel;
 		
@@ -108,9 +100,8 @@ public class SionEngine extends Game {
 	@Override
 	public void dispose() {
 		m_assetManager.dispose();
-		m_batch.dispose();
-		m_world.dispose();
 		m_shapeRenderer.dispose();
+		m_entityWorld.dispose();
 	}
 	
 	@Override
@@ -121,7 +112,6 @@ public class SionEngine extends Game {
 		Gdx.gl.glEnable(GL10.GL_BLEND);
 		
 		m_camera.update();
-		m_batch.setProjectionMatrix(m_camera.combined);
 		
 		Gdx.gl.glViewport((int) m_viewport.x,
 						  (int) m_viewport.y,
@@ -129,6 +119,9 @@ public class SionEngine extends Game {
 						  (int) m_viewport.height);
 		
 		super.render();
+		
+		m_tweenManager.update(Gdx.graphics.getDeltaTime());
+		m_entityWorld.update();
 		
 		m_shapeRenderer.setProjectionMatrix(m_camera.combined);
 		m_shapeRenderer.begin(ShapeType.Line);
@@ -246,16 +239,8 @@ public class SionEngine extends Game {
 		return m_pixelsPerUnit;
 	}
 	
-	public static World getWorld() {
-		return m_world;
-	}
-	
 	public static EntityWorld getEntityWorld() {
 		return m_entityWorld;
-	}
-	
-	public static SpriteBatch getBatch() {
-		return m_batch;
 	}
 	
 	public static OrthographicCamera getCamera() {

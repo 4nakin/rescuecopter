@@ -20,6 +20,12 @@ public class Aspect {
 	}
 	
 	public boolean check(Entity e) {
+		if (m_all.size == 0 &&
+			m_any.size == 0 &&
+			m_none.size == 0) {
+			return false;
+		}
+		
 		for (Class<? extends Component> c : m_all) {
 			if (!e.hasComponent(c)) return false;
 		}

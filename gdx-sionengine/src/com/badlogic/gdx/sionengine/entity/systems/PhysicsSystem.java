@@ -38,12 +38,8 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 	private int m_positionIterations;
 	private ObjectMap<Integer, ObjectMap<Integer, CollisionHandler>> m_handlers;
 	
-	public PhysicsSystem(EntityWorld world,
-						 int priority,
-						 World box2DWorld,
-						 OrthographicCamera camera) {
-		
-		super(world, priority);
+	public PhysicsSystem(int priority, OrthographicCamera camera) {
+		super(priority);
 		
 		Settings settings = SionEngine.getSettings();
 		
@@ -51,7 +47,8 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 		m_logger.info("initializing");
 		
 		m_aspect.addToAll(Physics.class);
-		m_box2DWorld = box2DWorld;
+		final Vector3 gravity = settings.getVector("physics.gravity", Vector3.Zero);
+		m_box2DWorld = new World(new Vector2(gravity.x, gravity.y), settings.getBoolean("physics.doSleep", true));;
 		m_camera = camera;
 		m_handlers = new ObjectMap<Integer, ObjectMap<Integer, CollisionHandler>>();
 		
@@ -65,6 +62,10 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 		m_positionIterations = settings.getInt("physics.positionIterations", 2);
 		
 		m_box2DWorld.setContactListener(this);
+	}
+	
+	public World getWorld() {
+		return m_box2DWorld;
 	}
 	
 	public void addCollisionHandler(int typeA, int typeB, CollisionHandler handler) {
@@ -81,6 +82,12 @@ public class PhysicsSystem extends EntitySystem implements ContactListener {
 	@Override
 	public void end() {
 		m_box2DRenderer.render(m_box2DWorld, m_camera.combined);
+	}
+	
+	@Override
+	public void dispose() {
+		m_box2DWorld.dispose();
+		m_box2DRenderer.dispose();
 	}
 	
 	@Override

@@ -25,12 +25,10 @@ public class RenderingSystem extends EntitySystem {
 	private ZSort m_sorter = new ZSort();
 	private Array<Entity> m_sorted;
 	
-	public RenderingSystem(EntityWorld world,
-						   int priority,
-						   SpriteBatch batch,
+	public RenderingSystem(int priority,
 						   OrthographicCamera camera) {
 		
-		super(world, priority);
+		super(priority);
 		
 		Settings settings = SionEngine.getSettings();
 		
@@ -39,13 +37,14 @@ public class RenderingSystem extends EntitySystem {
 		m_aspect.addToAll(Transform.class);
 		m_aspect.addToAll(AnimatedSprite.class);
 		m_aspect.addToAll(State.class);
-		m_batch = batch;
+		m_batch = new SpriteBatch();
 		m_camera = camera;
 		m_sorted = new Array<Entity>(settings.getInt("rendering.queueSize", 500));
 	}
 
 	@Override
 	public void begin() {
+		m_batch.setProjectionMatrix(m_camera.combined);
 		m_batch.begin();
 	}
 	
@@ -65,6 +64,11 @@ public class RenderingSystem extends EntitySystem {
 		m_sorted.clear();
 		
 		m_batch.end();
+	}
+	
+	@Override
+	public void dispose() {
+		m_batch.dispose();
 	}
 	
 	@Override

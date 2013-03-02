@@ -39,13 +39,13 @@ public class RescueCopter extends SionEngine {
 		world.setComponentPool(Asset.class, new AssetPool());
 		world.setComponentPool(Type.class, new TypePool());
 		
-		world.addSystem(new AssetSystem(world, 1));
-		world.addSystem(new RenderingSystem(world, 2, SionEngine.getBatch(), SionEngine.getCamera()));
-		world.addSystem(new PlayerController(world,3));
-		world.addSystem(new AbductionSystem(world, 4));
-		world.addSystem(new PhysicsSystem(world, 5, SionEngine.getWorld(), SionEngine.getCamera()));
-		world.addSystem(new CollisionHandlingSystem(this, world, 6));
-		world.addSystem(new DisposingSystem(world, 7));
+		world.addSystem(new AssetSystem(1));
+		world.addSystem(new RenderingSystem(2, SionEngine.getCamera()));
+		world.addSystem(new PlayerController(3));
+		world.addSystem(new AbductionSystem(4));
+		world.addSystem(new PhysicsSystem(5, SionEngine.getCamera()));
+		world.addSystem(new CollisionHandlingSystem(this, 6));
+		world.addSystem(new DisposingSystem(7));
 		
 		world.prepare();
 		
