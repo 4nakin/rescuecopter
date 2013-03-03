@@ -11,7 +11,6 @@ import com.badlogic.gdx.sionengine.entity.components.State;
 import com.badlogic.gdx.sionengine.entity.components.Type;
 import com.badlogic.gdx.sionengine.entity.systems.PhysicsSystem;
 import com.badlogic.gdx.sionengine.entity.systems.PhysicsSystem.CollisionHandler;
-import com.siondream.rescue.GameScreen.ScreenState;
 
 public class CollisionHandlingSystem extends EntitySystem {
 
@@ -65,7 +64,7 @@ public class CollisionHandlingSystem extends EntitySystem {
 				
 				if (ship.getEnergy() <= 0.0f) {
 					GameScreen gameScreen = (GameScreen)m_game.getScreen("GameScreen");
-					gameScreen.setState(ScreenState.Lose);
+					gameScreen.getStateController().setState(GameGlobals.gamescreen_lose);
 				}
 			}
 		}

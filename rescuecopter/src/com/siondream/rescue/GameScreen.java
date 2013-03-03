@@ -18,6 +18,8 @@ import com.badlogic.gdx.sionengine.Chronometer.Format;
 import com.badlogic.gdx.sionengine.Chronometer.Time;
 import com.badlogic.gdx.sionengine.Globals;
 import com.badlogic.gdx.sionengine.SionEngine;
+import com.badlogic.gdx.sionengine.SionScreen;
+import com.badlogic.gdx.sionengine.StateUpdater;
 import com.badlogic.gdx.sionengine.entity.Entity;
 import com.badlogic.gdx.sionengine.entity.EntityWorld;
 import com.badlogic.gdx.sionengine.entity.components.AnimatedSprite;
@@ -39,20 +41,10 @@ import com.badlogic.gdx.sionengine.maps.RectangleMapObject;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Logger;
 
-public class GameScreen implements Screen, InputProcessor {
-	
-	public enum ScreenState {
-		Init,
-		Loading,
-		Start,
-		Playing,
-		Lose,
-		Win,
-	}
+public class GameScreen extends SionScreen {
 	
 	private RescueCopter m_game;
 	private Logger m_logger = new Logger("GameScreen", Logger.INFO);  
-	private ScreenState m_state = ScreenState.Loading;
 	private Map m_map;
 	private GleedMapRenderer m_mapRenderer;
 	private MapBodyManager m_mapBodyManager = new MapBodyManager();
@@ -68,8 +60,19 @@ public class GameScreen implements Screen, InputProcessor {
 	private Label m_lblEnergy;
 	
 	public GameScreen(RescueCopter game) {
+		super("gamescreen");
+		
 		m_game = game;
 		
+		// State machine
+		m_stateController.addUpdater(GameGlobals.gamescreen_init, new InitUpdater());
+		m_stateController.addUpdater(GameGlobals.gamescreen_loading, new LoadingUpdater());
+		m_stateController.addUpdater(GameGlobals.gamescreen_playing, new PlayingUpdater());
+		m_stateController.addUpdater(GameGlobals.gamescreen_win, new WinUpdater());
+		m_stateController.addUpdater(GameGlobals.gamescreen_lose, new LoseUpdater());
+		m_stateController.setState(GameGlobals.gamescreen_init);
+		
+		// Create UI
 		m_stage.setCamera(m_HUDCamera);
 		Skin skin = m_game.getSkin();
 		m_table.setFillParent(true);
@@ -94,15 +97,6 @@ public class GameScreen implements Screen, InputProcessor {
 		m_stage.addActor(m_lblEnergy);
 	}
 	
-	public ScreenState getState() {
-		return m_state;
-	}
-	
-	public void setState(ScreenState state) {
-		m_state = state;
-	}
-	
-	
 	private void resetGame() {
 		EntityWorld world = SionEngine.getEntityWorld();
 		TagManager tagManager = world.getManager(TagManager.class);
@@ -124,11 +118,6 @@ public class GameScreen implements Screen, InputProcessor {
 			
 			astronauts.clear();
 		}
-		
-		// Reset timers
-		
-		// Reset game state
-		setState(ScreenState.Loading);
 		
 		// Create spaceship
 		createSpaceShip();
@@ -156,65 +145,6 @@ public class GameScreen implements Screen, InputProcessor {
 	public void pause() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void render(float delta) {
-
-		if (m_state == ScreenState.Init){
-			if (SionEngine.getAssetManager().update()) {
-				
-				if (m_map == null) {
-					m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
-					m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
-					m_mapBodyManager.createPhysics(m_map, "Physics");
-					RectangleMapObject boundsObject = (RectangleMapObject)m_map.getLayers().getLayer("Camera").getObjects().getObject("bounds");
-					
-					if (boundsObject != null) {					
-						EntityWorld world = SionEngine.getEntityWorld();
-						ShipCameraSystem cameraSystem = world.getSystem(ShipCameraSystem.class);
-						cameraSystem.setBounds(boundsObject.getRectangle()); 
-					}
-				}
-				
-				resetGame();
-				setState(ScreenState.Loading);
-			}
-			
-			return;
-		}
-		
-		if (m_state == ScreenState.Loading) {
-			if (SionEngine.getAssetManager().update()) {
-				m_state = ScreenState.Playing;
-				m_chrono.start();
-			}
-			else {
-				return;
-			}
-		}
-		
-		if (m_mapRenderer != null) {
-			Entity cameraEntity = SionEngine.getEntityWorld().getEntityByTag(Globals.entity_camera);
-			
-			if (cameraEntity != null) {
-				CameraComponent cameraComponent = cameraEntity.getComponent(CameraComponent.class);
-				m_mapRenderer.begin();
-				m_mapRenderer.render(cameraComponent.get());
-				m_mapRenderer.end();
-			}
-			
-		}
-		
-		if (m_state == ScreenState.Lose) {
-			resetGame();
-		}
-		
-		if (m_state == ScreenState.Win) {
-			return;
-		}
-				
-		updateHUD();
 	}
 
 	private void updateHUD() {
@@ -252,49 +182,7 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(this);
-		
-		SionEngine.getAssetManager().load("data/level.xml", Map.class);
-		setState(ScreenState.Init);
-	}
-
-	public boolean keyDown(int keycode) {
-			
-		return false;
-	}
-	
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	 
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	 
-	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	 
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	 
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	 
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
+		m_stateController.setState(GameGlobals.gamescreen_init);
 	}
 	
 	private void createSpaceShip() {
@@ -374,5 +262,140 @@ public class GameScreen implements Screen, InputProcessor {
 			groupManager.register(GameGlobals.group_astronauts, entity);
 			m_logger.info("Created astronaut in " + position);
 		}
+	}
+	
+	private class InitUpdater implements StateUpdater {
+
+		@Override
+		public void onEnter(int previousState) {
+			SionEngine.getAssetManager().load("data/level.xml", Map.class);
+		}
+
+		@Override
+		public void update(float deltaT) {
+			if (SionEngine.getAssetManager().update()) {
+				if (m_map == null) {
+					m_map = SionEngine.getAssetManager().get("data/level.xml", Map.class);
+					m_mapRenderer = new GleedMapRenderer(m_map, new SpriteBatch(), SionEngine.getUnitsPerPixel());
+					m_mapBodyManager.createPhysics(m_map, "Physics");
+					RectangleMapObject boundsObject = (RectangleMapObject)m_map.getLayers().getLayer("Camera").getObjects().getObject("bounds");
+					
+					if (boundsObject != null) {					
+						EntityWorld world = SionEngine.getEntityWorld();
+						ShipCameraSystem cameraSystem = world.getSystem(ShipCameraSystem.class);
+						cameraSystem.setBounds(boundsObject.getRectangle()); 
+					}
+				}
+				
+				resetGame();
+				m_stateController.setState(GameGlobals.gamescreen_loading);
+			}
+		}
+
+		@Override
+		public void onExit(int nextState) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	private class LoadingUpdater implements StateUpdater {
+
+		@Override
+		public void onEnter(int previousState) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void update(float deltaT) {
+			if (SionEngine.getAssetManager().update()) {
+				m_stateController.setState(GameGlobals.gamescreen_playing);
+			}
+		}
+
+		@Override
+		public void onExit(int nextState) {
+			m_chrono.start();
+		}
+		
+	}
+	
+	private class PlayingUpdater implements StateUpdater {
+
+		@Override
+		public void onEnter(int previousState) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void update(float deltaT) {
+			if (m_mapRenderer != null) {
+				Entity cameraEntity = SionEngine.getEntityWorld().getEntityByTag(Globals.entity_camera);
+				
+				if (cameraEntity != null) {
+					CameraComponent cameraComponent = cameraEntity.getComponent(CameraComponent.class);
+					m_mapRenderer.begin();
+					m_mapRenderer.render(cameraComponent.get());
+					m_mapRenderer.end();
+				}
+				
+			}
+					
+			updateHUD();
+		}
+
+		@Override
+		public void onExit(int nextState) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	private class LoseUpdater implements StateUpdater {
+
+		@Override
+		public void onEnter(int previousState) {
+			resetGame();
+			m_stateController.setState(GameGlobals.gamescreen_loading);
+		}
+
+		@Override
+		public void update(float deltaT) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onExit(int nextState) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	private class WinUpdater implements StateUpdater {
+
+		@Override
+		public void onEnter(int previousState) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void update(float deltaT) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onExit(int nextState) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 }
